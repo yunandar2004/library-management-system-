@@ -1,9 +1,9 @@
-import RegisterPage from '@/features/auth/pages/RegisterPage'
 import React from 'react'
 
 const Page = () => {
   return (
-<RegisterPage/>  )
+    <div>Page</div>
+  )
 }
 
 export default Page

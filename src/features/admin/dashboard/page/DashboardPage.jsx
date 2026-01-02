@@ -1,9 +1,14 @@
-import React from 'react'
+"use client";
+
+import DashboardLayout from "../components/DashboardLayout";
+import ModuleListSection from "../components/ModuleListSection";
 
 const DashboardPage = () => {
   return (
-    <div>DashboardPage</div>
-  )
-}
+    <DashboardLayout>
+      <ModuleListSection />
+    </DashboardLayout>
+  );
+};
 
-export default DashboardPage
+export default DashboardPage;
