@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 import UserRow from "./UserRow";
 import UserEmptyStage from "./UserEmptyStage";
 import Sortable from "@/components/Sortable";
@@ -6,43 +6,17 @@ import UserExportBtn from "./UserExportBtn";
 import UserImportBtn from "./UserImportBtn";
 import UserAddBtn from "./UserAddBtn";
 import { Search } from "lucide-react";
+import useSWR from "swr";
+import { fetchUser, userApiURL } from "@/services/user";
+import Pagination from "@/components/Pagenation";
 
 const UserManagementSection = () => {
-  const users = [
-    {
-      username: "john_doe",
-      email: "john.doe@example.com",
-      address: "123 Main St, New York, NY, USA",
-      phone: "+1-555-123-4567",
-      created_at: "2024-11-15T10:30:00Z",
-      ban: false,
-      edit: true,
-      detail: "Regular user account",
-      profile_img: "https://example.com/images/john_doe.png",
-    },
-    {
-      username: "jane_smith",
-      email: "jane.smith@example.com",
-      address: "45 Queen St, London, UK",
-      phone: "+44-7700-900123",
-      created_at: "2024-12-02T14:05:20Z",
-      ban: true,
-      edit: false,
-      detail: "Account banned due to policy violation",
-      profile_img: "https://example.com/images/jane_smith.png",
-    },
-    {
-      username: "alex_khan",
-      email: "alex.khan@example.com",
-      address: "78 Clifton Rd, Karachi, Pakistan",
-      phone: "+92-300-1234567",
-      created_at: "2025-01-08T09:15:45Z",
-      ban: false,
-      edit: true,
-      detail: "Admin user",
-      profile_img: "https://example.com/images/alex_khan.png",
-    },
-  ];
+  const { data, isLoading, error } = useSWR(userApiURL, fetchUser);
+  if (isLoading) {
+    return <UserEmptyStage />;
+  }
+  console.log(data);
+
 
   return (
     <section className="">
@@ -71,12 +45,12 @@ const UserManagementSection = () => {
       </div>
 
       <div>
-        <div className="relative overflow-x-auto shadow-md sm: mb-5">
+        <div className="relative overflow-x-auto shadow-md sm: mb-3 h-100 overflow-y-scroll ">
           <table className="w-full text-sm text-left rtl:text-right text-stone-500 dark:text-stone-400">
             <thead className="text-xs text-stone-700 uppercase bg-indigo-100 dark:bg-indigo-700 dark:text-indigo-400">
               <tr className=" ">
                 <th scope="col" className="px-2 py-5">
-                  <Sortable sort_by={`eb_no`}>
+                  <Sortable sort_by={`eb_no`}>cl
                     <span className=" text-nowrap">Invoice Number</span>
                   </Sortable>
                 </th>
@@ -98,7 +72,7 @@ const UserManagementSection = () => {
                 <th scope="col" className="px-2 py-5 text-end"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="w-full h-100 overflow-y-scroll" >
               {/* {isLoading ? (
               <SaleSkeletonLoader />
             ) : data?.data?.length === 0 ? (
@@ -107,15 +81,28 @@ const UserManagementSection = () => {
               data?.data?.map((sale) => <SaleRow sale={sale} key={sale.id} />)
             )} */}
               {/* <BookRow /> */}
-              {users?.length === 0 ? (
+              {data?.items?.length === 0 ? (
                 <UserEmptyStage />
               ) : (
-                users?.map((user) => <UserRow user={user} key={user.id} />)
+                data?.items?.map(
+                  (user, index) =>
+                    user.role === "user" && <UserRow user={user} key={index} />
+                )
               )}
             </tbody>
           </table>
         </div>
-        
+      </div>
+      <div className="">
+        {
+          <Pagination
+            page={data.page}
+            limit={data.limit}
+            total={data.total}
+            onPageChange={(p) => fetchUsers(p, data.limit)}
+            onLimitChange={(l) => fetchUsers(1, l)}
+          />
+        }
       </div>
     </section>
   );

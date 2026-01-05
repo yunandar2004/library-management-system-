@@ -12,8 +12,19 @@ import {
 import { Users } from "lucide-react";
 import Link from "next/link";
 import HeroSection from "../components/HeroSection";
+import useAccountStore from "@/store/useAccountStore";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const HomePage = () => {
+  const{token} = useAccountStore()
+  const router = useRouter()
+  useEffect(() => {
+    if(!token){
+      // console.log("You are login");
+      router.push("/")
+    }
+  },[token])
   return (
     <section>
       <Header />

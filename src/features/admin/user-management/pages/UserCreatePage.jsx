@@ -1,4 +1,4 @@
-import React from 'react'
+"use client"
 import UserCreateForm from '../components/UserCreateForm'
 import DashboardLayout from '../../dashboard/components/DashboardLayout'
 

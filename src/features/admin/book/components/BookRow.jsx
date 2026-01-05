@@ -1,8 +1,45 @@
+import { bookApiURL, destroyBook } from "@/services/book";
 import { ArrowRight, Edit, Timer, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import React from "react";
+import { toast } from "sonner";
 
-const BookRow = () => {
+const BookRow = ({ book }) => {
+  const date = new Date(book.updatedAt);
+
+  const dateString = date.toLocaleDateString(); // "1/3/2026"
+  const timeString = date.toLocaleTimeString(); // "1:29:18 PM"
+  const searchParams = useSearchParams();
+
+  const handleDeleteBtn = async () => {
+    // if (
+    //   !confirm(
+    //     archived_at
+    //       ? "Are you sure to restore customer?"
+    //       : "Are you sure to remove customers?"
+    //   )
+    // )
+    //   return;
+
+    // const toastId = toast.loading(
+    //   archived_at ? "Restoring customer..." : "Deleting customer..."
+    // );
+
+    try {
+      const res = await destroyBook(id);
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.message);
+      }
+      toast.success(json.message, { id: toastId });
+      mutate(`${bookApiURL}?${searchParams.toString()}`);
+    } catch (err) {
+      toast.error(err.message, { id: toastId });
+      console.error(err);
+    }
+  };
+
   return (
     <tr className=" bg-indigo-50 hover:bg-blue-200">
       <td className="px-6 py-3  ">
@@ -15,50 +52,60 @@ const BookRow = () => {
         className="px-6 py-3 font-medium  text-stone-900 dark:text-white"
       >
         <div className="flex flex-col">
-          <span className=" block text-nowrap uppercase text-xs">book-name</span>
+          <span className=" block text-nowrap uppercase text-xs">
+            {book.title}
+          </span>
         </div>
       </th>
       <th
         scope="row"
         className="px-6 py-3  text-nowrap text-xs font-medium text-stone-900 dark:text-white"
       >
-        Category
+        {book.category}
       </th>
       <th
         scope="row"
         className="px-6 py-3 font-medium text-nowrap text-xs text-stone-900 dark:text-white"
       >
-        Original 
+        {book.totalCopies}
       </th>
       <th
         scope="row"
         className="px-6 py-3 font-medium text-nowrap text-xs text-stone-900 dark:text-white"
       >
-        Copy 
+        {book.availableCopies}
       </th>
       <th
         scope="row"
         className="px-6 py-3 text-nowrap text-xs font-medium text-stone-900 dark:text-white font-mono text-end"
       >
-        sale price
+        $ {book.borrowPrice}
       </th>
       <th
         scope="row"
         className="px-6 py-3 text-nowrap text-xs font-medium text-stone-900 dark:text-white font-mono text-end"
       >
-        Availability
+        {book.availableCopies === 0 ? (
+          <p className="bg-red-400 text-white px-3 py-1 rounded-2xl text-center">
+            Unavailable
+          </p>
+        ) : (
+          <p className="bg-green-400 text-white px-3 py-1 rounded-2xl text-center">
+            Available
+          </p>
+        )}
       </th>
 
       <th
         scope="row"
         className="px-6 py-3 text-nowrap text-xs font-medium text-stone-900 dark:text-white"
       >
-        <span className=" block text-nowrap text-xs">created_at</span>
+        <span className=" block text-nowrap text-xs">{dateString}</span>
       </th>
 
       <td className="px-6 py-3 text-end flex gap-3">
         <Edit className="size-4.5" />
-        <Trash2 className="size-4.5" />
+        <Trash2 className="size-4.5" onClick={handleDeleteBtn} />
 
         <Link
           href={`/dashboard/sale/$id`}

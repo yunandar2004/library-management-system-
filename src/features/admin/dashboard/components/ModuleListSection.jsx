@@ -1,30 +1,6 @@
 "use client";
 import ModuleButton from "./ModuleButton";
-import {
-  BicepsFlexed,
-  Book,
-  Calendar,
-  Coins,
-  DollarSignIcon,
-  Files,
-  HardHat,
-  IdCard,
-  Image,
-  Lock,
-  MessageSquare,
-  MessagesSquare,
-  Monitor,
-  Recycle,
-  Sheet,
-  Text,
-  Type,
-  User,
-  User2,
-  UserPen,
-  UserRoundCog,
-  Users,
-  Users2,
-} from "lucide-react";
+import { Book, Coins, IdCard, Monitor, Recycle, Users } from "lucide-react";
 
 const ModuleListSection = () => {
   const modules = [
@@ -33,7 +9,6 @@ const ModuleListSection = () => {
       lists: [
         {
           name: "Overdue Borrowers ",
-          // icon: <Monitor className=" size-7" />,
           icon: <Coins className=" size-7" />,
 
           url: "/dashboard/sale",
@@ -46,7 +21,7 @@ const ModuleListSection = () => {
         {
           name: "Total User Base",
           icon: <Users className=" size-7" />,
-          url: "/admin/users",
+          url: "/admin/user",
         },
         {
           name: "Total Overdue Borrowers",

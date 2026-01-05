@@ -1,12 +1,19 @@
-
 "use client";
 import React from "react";
 import { BookOpen, Layers, LayoutDashboard, LogOut, Users } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import useAccountStore from "@/store/useAccountStore";
 
 const AdminSideBar = () => {
+  const router = useRouter();
   const pathname = usePathname();
+  const { logout } = useAccountStore();
+
+  const handleClick = () => {
+    logout();
+    router.push("/");
+  };
 
   const isActive = (path) => pathname === path;
 
@@ -81,7 +88,7 @@ const AdminSideBar = () => {
 
       {/* Logout */}
       <div className="px-4 py-6 border-t border-indigo-600">
-        <button className="flex items-center gap-3 w-full px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-600 transition">
+        <button className="flex items-center gap-3 w-full px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-600 transition" onClick={handleClick}>
           <LogOut size={18} />
           Log Out
         </button>

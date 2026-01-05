@@ -30,7 +30,7 @@ function BookCard({ book, view,tab }) {
             view === "grid" ? "block" : "hidden"
           } ${book.status === "late" ? "bg-red-500" : "bg-indigo-600"}`}
         >
-          <div className="border rounded flex items-center justify-center px-1 py-0.5 ">
+          <div className="border rounded flex items-center justify-center px-1 py-0.5 mt-3 ">
             <Undo2Icon className="w-4 h-4  " />
           </div>
           Return

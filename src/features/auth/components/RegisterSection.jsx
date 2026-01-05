@@ -4,6 +4,7 @@ import { Eye, EyeClosedIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 // import { toast } from "sonner";
 // import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
@@ -29,13 +30,13 @@ const RegisterSection = () => {
       });
       const result = await res.json();
       if (!res.ok) {
-        throw new Error(result.message);
+        throw new Error(result.message || "Registration failed,.");
       } else {
-        // toast.success(result.message);
+        toast.success(result.message || "Registration successful!");
         reset();
       }
     } catch (error) {
-      // toast.error(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -156,7 +157,7 @@ const RegisterSection = () => {
               </div>
 
               {/* CONFIRM PASSWORD */}
-              <div className="relative">
+              {/* <div className="relative">
                 <label
                   htmlFor="confirmPassword"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -176,7 +177,6 @@ const RegisterSection = () => {
                   })}
                 />
 
-                {/* Toggle icon */}
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
@@ -194,7 +194,7 @@ const RegisterSection = () => {
                     {errors.confirmPassword.message}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               {/* TERMS */}
               <div className="flex items-start">
@@ -240,7 +240,7 @@ const RegisterSection = () => {
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
                 <Link
-                  href={"/"}
+                  href={"/login"}
                   className="font-medium text-blue-600 hover:underline"
                 >
                   Login here

@@ -1,210 +1,232 @@
 "use client";
-// import { useCreateUser } from "../hooks/useCreateUser";
+
+import { userAdd } from "@/services/user";
 import { Edit, Eye, EyeClosed } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import useCreateCustomer from "../hooks/useCreateCustomer";
 
 const UserCreateForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const fileRef = useRef(null);
 
+   const {
+    store,
+    register,
+    handleSubmit,
+    isSubmitting,
+    errors,
+    router,
+    handlePhoneCheck,
+  } = useCreateCustomer();
+
+  // // const {
+  // //   register,
+  // //   handleSubmit,
+  // //   formState: { errors, isSubmitting },
+  // // } = useForm({
+  // //   defaultValues: {
+  // //     isActive: true,
+  // //     role: "user",
+  // //   },
+  // // });
+
+  // // const onSubmit = async (data) => {
+  // //   try {
+  // //     const { res, data: result } = await userAdd({
+  // //       name: data.name,
+  // //       email: data.email,
+  // //       password: data.password,
+  // //       role: data.role,
+  // //       isActive: data.isActive,
+  // //       image: data.image, // 👈 comes from react-hook-form file input
+  // //     });
+
+  // //     if (!res.ok) {
+  // //       throw new Error(result.message || "Adding User failed.");
+  // //     }
+  // //     toast.success("User added successfully!");
+  // //   } catch (error) {
+  // //     toast.error(error.message);
+  // //   }
+  // // };
+  // // UserCreateForm.jsx
+  // // ... (keep all your imports and state)
+
+  // const onSubmit = async (data) => {
+  //   // 1. Create a new FormData object
+  //   const formData = new FormData();
+
+  //   // 2. Append all non-file fields
+  //   formData.append("name", data.name);
+  //   formData.append("email", data.email);
+  //   formData.append("password", data.password);
+  //   formData.append("role", data.role);
+  //   // Convert boolean to string if your backend expects a string or int
+  //   formData.append("isActive", data.isActive ? "true" : "false");
+
+  //   // 3. Append the file. Check if a file was selected.
+  //   // react-hook-form gives the file input as an array/FileList
+  //   if (data.image && data.image.length > 0) {
+  //     // 'image' here should match the key your backend is expecting for the file
+  //     formData.append("image", data.image[0]);
+  //   }
+
+  //   try {
+  //     // 4. Pass the formData object to the userAdd service
+  //     const { res, data: result } = await userAdd(formData);
+  //     if (!res.ok) {
+  //       throw new Error(result.message || "Adding User failed.");
+  //     }
+  //     toast.success("User added successfully!");
+  //   } catch (error) {
+  //     toast.error(error.message);
+  //   }
+  // };
+
+  // ... (rest of the component)
   return (
     <div className="px-10 w-full">
       <h1 className="text-xl font-bold mb-3">Create New User</h1>
-      <form
-      //   onSubmit={handleSubmit(store)}
-      >
+
+      <form onSubmit={handleSubmit(store)}>
         <div className="w-full grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4">
           <div className="col-span-1">
-            <div className="relative w-20 h-20">
-              {/* Profile circle */}
+            {/* Image */}
+            <div className="relative w-20 h-20 mb-4">
               <div className="w-20 h-20 rounded-full border flex items-center justify-center">
-               <input
-                type="file"
-                name="profile"
-                id="profile"
-                // ref={fileRef}
-                // className="hidden"
-              />
+                <input
+                  type="file"
+                  ref={fileRef}
+                  className="hidden"
+                  {...register("image")}
+                />
               </div>
 
-              {/* Edit icon */}
               <button
                 type="button"
-                // onClick={() => fileRef.current.click()}
+                onClick={() => fileRef.current.click()}
                 className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow"
               >
                 <Edit className="size-5" />
               </button>
             </div>
-            <div className="mb-3 ">
-              <label
-                 htmlFor="name"
-                // className={`block mb-2 text-sm font-medium ${
-                //   errors.name ? "text-red-500" : "text-stone-900"
-                // } dark:text-white`}
-              >
+
+            {/* Name */}
+            <div className="mb-3">
+              <label className="block mb-2 text-sm font-medium">
                 User Name <span className="text-red-500">*</span>
               </label>
               <input
-                id="name"
-                type="text"
-                // {...register("name", { required: true })}
-                className={`bg-stone-50 border 
-                    ${
-                      ""
-                      //   errors.name
-                      //     ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                      //     : "border-stone-300 focus:ring-indigo-500 focus:border-indigo-500"
-                    }
-                 text-stone-900 text-sm  block w-full p-1.5 rounded`}
+                {...register("name", { required: "User Name is required" })}
+                className={`bg-stone-50 border ${
+                  errors.name ? "border-red-500" : "border-stone-300"
+                } text-sm block w-full p-1.5 rounded`}
               />
-              {/* {errors.name && (
+              {errors.name && (
                 <p className="text-red-500 text-sm mt-1">
-                  User Name is required
+                  {errors.name.message}
                 </p>
-              )} */}
+              )}
             </div>
+
+            {/* Email */}
             <div className="mb-3">
-              <label
-                 htmlFor="email"
-                className={`block mb-2 text-sm font-medium ${
-                  //   errors.email ? "text-red-500" : "text-stone-900"
-                  ""
-                } dark:text-white`}
-              >
+              <label className="block mb-2 text-sm font-medium">
                 Email <span className="text-red-500">*</span>
               </label>
               <input
-                id="email"
                 type="email"
-                // {...register("email", { required: true })}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: "Invalid email address",
+                  },
+                })}
                 className={`bg-stone-50 border ${
-                  ""
-                  //   errors.email
-                  // ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                  // : "border-stone-300 focus:ring-indigo-500 focus:border-indigo-500"
-                } text-stone-900 text-sm  block w-full p-1.5 rounded`}
+                  errors.email ? "border-red-500" : "border-stone-300"
+                } text-sm block w-full p-1.5 rounded`}
               />
-              {/* {errors.email && (
-                <p className="text-red-500 text-sm mt-1">Email is required</p>
-              )} */}
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
+            {/* Role */}
             <div className="mb-3">
-              <label
-                 htmlFor="role"
-                className={`block mb-2 text-sm font-medium ${
-                  ""
-                  //   errors.role ? "text-red-500" : "text-stone-900"
-                } dark:text-white`}
-              >
+              <label className="block mb-2 text-sm font-medium">
                 Account Role <span className="text-red-500">*</span>
               </label>
               <select
-                id="role"
-                // {...register("role", { required: true })}
-                defaultValue={2}
-                className={`bg-stone-50 border ${
-                  ""
-                  //   errors.role
-                  //     ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                  //     : "border-stone-300 focus:ring-indigo-500 focus:border-indigo-500"
-                } text-stone-900 text-sm  block w-full p-1.5 rounded`}
+                {...register("role", { required: "Role is required" })}
+                className="bg-stone-50 border border-stone-300 text-sm block w-full p-1.5 rounded"
               >
-                <option value={1}>Admin</option>
-                <option value={2}>User</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
               </select>
-              {/* {errors.role && (
-                <p className="text-red-500 text-sm mt-1">Role is required</p>
-              )} */}
+              {errors.role && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.role.message}
+                </p>
+              )}
             </div>
 
+            {/* Password */}
             <div className="mb-3 relative">
-              <label
-                 htmlFor="password"
-                className={`block mb-2 text-sm font-medium ${
-                  ""
-                  //   errors.password ? "text-red-500" : "text-stone-900"
-                } dark:text-white`}
-              >
+              <label className="block mb-2 text-sm font-medium">
                 Password <span className="text-red-500">*</span>
               </label>
               <input
-                id="password"
                 type={showPassword ? "text" : "password"}
-                // {...register("password", { required: true })}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Minimum 6 characters",
+                  },
+                })}
                 className={`bg-stone-50 border ${
-                  ""
-                  //   errors.password
-                  // ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                  // : "border-stone-300 focus:ring-indigo-500 focus:border-indigo-500"
-                } text-stone-900 text-sm  block w-full p-1.5 rounded`}
+                  errors.password ? "border-red-500" : "border-stone-300"
+                } text-sm block w-full p-1.5 rounded`}
               />
               <button
                 type="button"
-                className=" absolute right-3 bottom-3 text-gray-400 duration-150 active:scale-75"
                 onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 bottom-3 text-gray-400"
               >
                 {showPassword ? (
-                  <Eye className=" size-4" />
+                  <Eye className="size-4" />
                 ) : (
-                  <EyeClosed className=" size-4" />
+                  <EyeClosed className="size-4" />
                 )}
               </button>
-              {/* {errors.password && (
+              {errors.password && (
                 <p className="text-red-500 text-sm mt-1">
-                  Password is required
+                  {errors.password.message}
                 </p>
-              )} */}
+              )}
             </div>
           </div>
 
+          {/* Footer */}
           <div className="col-span-full mt-5">
-            <div className="flex items-center mb-4">
-              <input
-                // {...register("all_correct")}
-                required
-                id="all-correct"
-                type="checkbox"
-                className="w-4 h-4 text-indigo-600 bg-stone-100 border-stone-300 focus:ring-indigo-500"
-              />
-              <label
-                 htmlFor="all-correct"
-                className="ml-2 text-sm font-medium text-stone-900"
-              >
-                Make sure all fields are correct
-              </label>
-            </div>
-
-            <div className="flex items-center mb-4">
-              <input
-                // {...register("back_to_user_list")}
-                id="back-to-User-list"
-                type="checkbox"
-                className="w-4 h-4 text-indigo-600 bg-stone-100 border-stone-300 focus:ring-indigo-500"
-              />
-              <label
-                 htmlFor="back-to-User-list"
-                className="ml-2 text-sm font-medium text-stone-900"
-              >
-                Back to User List after saving
-              </label>
-            </div>
-
             <button
               type="button"
-              //   onClick={() => router.back()}
-              className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-stone-900 bg-white  border border-stone-200 hover:bg-indigo-100 focus:z-10 focus:ring-4"
+              className="py-1.5 px-5 mr-2 rounded bg-gray-50"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              //   disabled={isSubmitting}
-              className="text-white bg-indigo-600 disabled:pointer-events-none disabled:opacity-80 inline-flex items-center justify-center gap-3 hover:bg-indigo-800 font-medium  text-sm w-full sm:w-auto px-5 py-2.5"
+              disabled={isSubmitting}
+              className="text-white bg-indigo-600 px-5 py-1.5 disabled:opacity-70"
             >
-              <span>Save User</span>
-              {/* {isSubmitting && <ButtonSpinner />} */}
+              {isSubmitting ? "Saving..." : "Save User"}
             </button>
           </div>
         </div>

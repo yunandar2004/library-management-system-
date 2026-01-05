@@ -5,6 +5,9 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import { userLogin } from "@/services/auth";
+import { toast } from "sonner";
+import useAccountStore from "@/store/useAccountStore";
+import { useRouter } from "next/navigation";
 // import { toast } from "sonner";
 
 const LoginSection = () => {
@@ -14,26 +17,35 @@ const LoginSection = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
+
+  const { token, setToken } = useAccountStore();
+  const router = useRouter();
 
   // Handle form submit
   const onSubmit = async (data) => {
-    console.log("Form Data:", data);
     try {
-      const res = await userLogin({
+      const { res, data: result } = await userLogin({
         email: data.email,
         password: data.password,
       });
-      const result = await res.json();
-      console.log(result);
+
       if (!res.ok) {
-        throw new Error(result.message);
+        throw new Error(result.message || "Login failed.");
+      }
+
+      toast.success("Login successful!");
+      setToken(result.token);
+
+      // 👇 check role from backend response
+      if (result.user.role === "admin") {
+        router.push("/admin"); // redirect to admin dashboard
       } else {
-        // toast.success("Login successful!");
+        router.push("/user"); // redirect to user dashboard
       }
     } catch (error) {
-      // toast.error(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -44,11 +56,7 @@ const LoginSection = () => {
           href="#"
           className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
         >
-          <img
-            className="w-8 h-8 mr-2"
-            src="/logo.png"
-            alt="logo"
-          />
+          <img className="w-8 h-8 mr-2" src="/logo.png" alt="logo" />
           Book Bridge
         </a>
 
@@ -160,9 +168,10 @@ const LoginSection = () => {
               {/* SUBMIT */}
               <button
                 type="submit"
-                className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                disabled={isSubmitting}
+                className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-65"
               >
-                Sign in
+                {isSubmitting ? "Submitting..." : "Sign in"}
               </button>
 
               {/* REGISTER */}

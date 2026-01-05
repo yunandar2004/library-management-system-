@@ -6,46 +6,18 @@ import BookEmptyStage from "./BookEmptyStage";
 import { Plus, Search } from "lucide-react";
 import BookExportBtn from "./BookExportBtn";
 import BookImportBtn from "./BookImportBtn";
+import useSWR from "swr";
+import { bookApiURL, fetchBook } from "@/services/book";
+import Pagination from "@/components/Pagenation";
+import BookAddBtn from "./BookAddBtn";
 
 const BookSection = () => {
-  const booksData = [
-    {
-      id : 1,
-      eb_no: "EB-001",
-      book_name: "JavaScript Fundamentals",
-      category: "Programming",
-      original_numbers: 100,
-      copy_numbers: 75,
-      sale_price: 499,
-      availability: "In Stock",
-      created_at: "2025-01-10",
-      image: "/mnt/data/2aa09b1e-b709-43ad-8bb5-e513380e5755.png",
-    },
-    {
-      id : 2,
-      eb_no: "EB-002",
-      book_name: "Database Design Basics",
-      category: "Computer Science",
-      original_numbers: 80,
-      copy_numbers: 0,
-      sale_price: 399,
-      availability: "Out of Stock",
-      created_at: "2025-01-12",
-      image: "/mnt/data/2aa09b1e-b709-43ad-8bb5-e513380e5755.png",
-    },
-    {
-      id : 3,
-      eb_no: "EB-003",
-      book_name: "React for Beginners",
-      category: "Web Development",
-      original_numbers: 120,
-      copy_numbers: 45,
-      sale_price: 599,
-      availability: "Limited",
-      created_at: "2025-01-15",
-      image: "/mnt/data/2aa09b1e-b709-43ad-8bb5-e513380e5755.png",
-    },
-  ];
+  const { data, isLoading, error } = useSWR(bookApiURL, fetchBook);
+  if (isLoading) {
+    return <div className="">Loading...........</div>;
+  }
+  console.log(data);
+
 
   return (
     <section className="">
@@ -67,29 +39,16 @@ const BookSection = () => {
         {/* RIGHT: Buttons */}
         <div className="flex items-center gap-3">
           {/* Add Button */}
-          <label
-            htmlFor="sale-excel-import"
-            className="rounded flex items-center ms-3 hover:bg-indigo-900 gap-2 bg-indigo-500 text-white text-sm px-3 py-2 cursor-pointer"
-          >
-            <Plus className="size-4" />
-            <span>Add</span>
-          </label>
 
-          <input
-            type="file"
-            id="sale-excel-import"
-            className="hidden"
-            accept=".xlsx,.xls"
-          />
-
+          <BookAddBtn />
           <BookExportBtn />
           <BookImportBtn />
         </div>
       </div>
 
       <div>
-        <div className="relative overflow-x-auto shadow-md sm: mb-5">
-          <table className="w-full text-sm text-left rtl:text-right text-stone-500 dark:text-stone-400">
+        <div className="relative overflow-x-auto shadow-md sm: mb-5 h-100 overflow-y-scroll">
+          <table className="w-full text-sm text-left rtl:text-right text-stone-500 dark:text-stone-400 ">
             <thead className="text-xs text-stone-700 uppercase bg-indigo-100 dark:bg-indigo-700 dark:text-indigo-400">
               <tr className=" ">
                 <th scope="col" className="px-2 py-5">
@@ -135,13 +94,26 @@ const BookSection = () => {
               data?.data?.map((sale) => <SaleRow sale={sale} key={sale.id} />)
             )} */}
               {/* <BookRow /> */}
-              {booksData?.length === 0 ? (
+              {data?.items?.length === 0 ? (
                 <BookEmptyStage />
               ) : (
-                booksData?.map((book) => <BookRow book={book} key={book.id} />)
+                data?.items?.map((book, index) => (
+                  <BookRow book={book} key={index} />
+                ))
               )}
             </tbody>
           </table>
+        </div>
+        <div className="">
+          {
+            <Pagination
+              page={data.page}
+              limit={data.limit}
+              total={data.total}
+              // onPageChange={(p) => fetchUsers(p, data.limit)}
+              // onLimitChange={(l) => fetchUsers(1, l)}
+            />
+          }
         </div>
       </div>
     </section>

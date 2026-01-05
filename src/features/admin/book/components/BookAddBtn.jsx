@@ -2,12 +2,11 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import useSWR from "swr";
 
-const UserAddBtn = () => {
+const BookAddBtn = () => {
   
   return (
-    <Link href={`/admin/user/create`}>
+    <Link href={`/admin/books/create`}>
       {" "}
       {/* Add Button */}
       <label
@@ -15,7 +14,7 @@ const UserAddBtn = () => {
         className="rounded flex items-center ms-3 hover:bg-indigo-900 gap-2 bg-indigo-500 text-white text-sm px-3 py-2 cursor-pointer"
       >
         <Plus className="size-4" />
-        <span>Add</span>
+        <span className="text-nowrap">Add Book</span>
       </label>
       <input
         type="file"
@@ -27,4 +26,4 @@ const UserAddBtn = () => {
   );
 };
 
-export default UserAddBtn;
+export default BookAddBtn;

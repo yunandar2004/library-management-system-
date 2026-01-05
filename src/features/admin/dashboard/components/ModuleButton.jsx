@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 
 const ModuleButton = ({ name, icon, url, count = null }) => {

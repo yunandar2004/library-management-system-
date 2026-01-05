@@ -23,7 +23,7 @@ const Pagination = ({
   const pageLimits = [5, 10, 20, 50, 100];
 
   return (
-    <div className="flex justify-between items-center flex-wrap gap-4">
+    <div className="flex justify-between items-center flex-wrap gap-4 mx-5">
       <span className="text-sm text-stone-700 dark:text-stone-400">
         Showing <b>{from}</b> to <b>{to}</b> of <b>{total}</b> Entries
       </span>

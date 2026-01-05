@@ -1,9 +1,9 @@
-import React from 'react'
+"use client";
+import BookCreatePage from "@/features/admin/book/page/BookCreatePage";
+import React from "react";
 
 const page = () => {
-  return (
-    <div>page</div>
-  )
-}
+  return <BookCreatePage />;
+};
 
-export default page
+export default page;
