@@ -118,6 +118,8 @@
 import { useEffect, useState } from "react";
 import BookCard from "./BookCard";
 import { Book, BookA, BookAlert, BookDown, Grid, List } from "lucide-react";
+import useSWR from "swr";
+import { bookApiURL } from "@/services/book";
 // import ReturnBookCard from "./ReturnBookCard";
 
 export default function BorrowedBookSection({ tab, setTab }) {
@@ -127,6 +129,8 @@ export default function BorrowedBookSection({ tab, setTab }) {
   const [page, setPage] = useState(1);
 
   const pageSize = 2;
+
+  // const{data} = useSWR(bookApiURL, fetchBook);
 
   /* Mock API call */
   useEffect(() => {

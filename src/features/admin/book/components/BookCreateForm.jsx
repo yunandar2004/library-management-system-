@@ -6,10 +6,11 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { bookAdd } from "@/services/book";
 import { useRouter } from "next/navigation";
+import { token } from "@/services/profile";
 
 const BookCreateForm = () => {
-  const fileRef = useRef(null);
   const router = useRouter();
+  const fileRef = useRef(null);
 
   const [preview, setPreview] = useState(null);
 
@@ -19,20 +20,24 @@ const BookCreateForm = () => {
     formState: { isSubmitting, errors },
     reset,
     setValue,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      image: null,
+    },
+  });
 
-  // Handle file input change
+  // Handle image selection
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    const imageURL = URL.createObjectURL(file);
-    setPreview(imageURL);
+    setPreview(URL.createObjectURL(file));
 
-    setValue("image", file);
+    // IMPORTANT: tell RHF to validate
+    setValue("image", file, { shouldValidate: true });
   };
 
-  // Cleanup preview URL to avoid memory leaks
+  // Cleanup image preview
   useEffect(() => {
     return () => {
       if (preview) URL.revokeObjectURL(preview);
@@ -40,33 +45,135 @@ const BookCreateForm = () => {
   }, [preview]);
 
   // Submit form
+  // const store = async (formData) => {
+  //   console.log("FORM DATA:", formData.title);
+  //   try {
+  //     console.log("FORM DATA:", formData);
+
+  //     // if (!formData.image) {
+  //     //   toast.error("Image is required");
+  //     //   return;
+  //     // }
+
+  //     const data = new FormData();
+  //     data.append("title", formData.title);
+  //     data.append("author", formData.author);
+  //     data.append("category", formData.category);
+  //     data.append("publishedYear", formData.publishedYear);
+  //     data.append("totalCopies", formData.totalCopies);
+  //     data.append("availableCopies", formData.availableCopies);
+  //     data.append("borrowPrice", formData.borrowPrice);
+  //     data.append("description", formData.description);
+  //     data.append("image", formData.image);
+
+  //     const res = await bookAdd(data);
+  //     const json = await res.json();
+  //     // Object.entries(formData).forEach(([key, value]) => {
+  //     //   if (value !== undefined && value !== null) {
+  //     //     data.append(key, value);
+  //     //   }
+  //     // });
+
+  //     // const res = await bookAdd(data);
+  //     // const json = await res.json();
+
+  //     if (!res.ok) throw new Error(json.message);
+
+  //     toast.success("Book created successfully");
+  //     reset();
+  //     setPreview(null);
+
+  //     if (formData.back_to_customer_list) {
+  //       router.push("/admin/books");
+  //     }
+  //   } catch (err) {
+  //     toast.error(err.message || "Something went wrong");
+  //     console.error(err);
+  //   }
+  // };
+
+  // const store = async (formData) => {
+  //   console.log("FORM DATA:", formData.title);
+  //   try {
+  //     console.log("FORM DATA:", formData);
+
+  //     // if (!formData.image) {
+  //     //   toast.error("Image is required");
+  //     //   return;
+  //     // }
+
+  //     const data = new FormData();
+  //     data.append("title", formData.title);
+  //     data.append("author", formData.author);
+  //     data.append("category", formData.category);
+  //     data.append("publishedYear", formData.publishedYear);
+  //     data.append("totalCopies", formData.totalCopies);
+  //     data.append("availableCopies", formData.availableCopies);
+  //     data.append("borrowPrice", formData.borrowPrice);
+  //     data.append("description", formData.description);
+  //     data.append("image", formData.image);
+
+  //     // Replace with your actual API URL
+  //     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`;
+
+  //     const res = await fetch(apiUrl, {
+  //       method: "POST",
+  //       headers: {
+  //         //  IMPORTANT: DO NOT set "Content-Type": "application/json"
+  //         Authorization: `Bearer ${token}`, // You still need your Authorization header
+  //       },
+  //       body: data,
+  //     });
+
+  //     const json = await res.json();
+
+  //     if (!res.ok) throw new Error(json.message);
+
+  //     toast.success("Book created successfully");
+  //     reset();
+  //     setPreview(null);
+
+  //     if (formData.back_to_customer_list) {
+  //       router.push("/admin/books");
+  //     }
+  //   } catch (err) {
+  //     toast.error(err.message || "Something went wrong");
+  //     console.error(err);
+  //   }
+  // };
+
   const store = async (formData) => {
     try {
-      const data = new FormData();
-      data.append("image", formData.image);
-      data.append("title", formData.title);
-      data.append("author", formData.author);
-      data.append("category", formData.category);
-      data.append("publishedYear", formData.publishedYear);
-      data.append("totalCopies", formData.totalCopies);
-      data.append("availableCopies", formData.availableCopies);
-      data.append("borrowPrice", formData.borrowPrice);
-      data.append("description", formData.description);
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`;
 
-      const res = await bookAdd(data);
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // ✅ REQUIRED
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          author: formData.author,
+          category: formData.category,
+          publishedYear: Number(formData.publishedYear),
+          totalCopies: Number(formData.totalCopies),
+          availableCopies: Number(formData.availableCopies),
+          borrowPrice: Number(formData.borrowPrice),
+          description: formData.description,
+          image: formData.imageUrl || "", // must be string
+        }),
+      });
+
       const json = await res.json();
-
       if (!res.ok) throw new Error(json.message);
 
       toast.success("Book created successfully");
       reset();
       setPreview(null);
-
-      if (formData.back_to_customer_list) {
-        router.push("/admin/books");
-      }
+      router.push("/admin/books");
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || "Something went wrong");
       console.error(err);
     }
   };
@@ -75,16 +182,17 @@ const BookCreateForm = () => {
     <div className="px-10 w-full">
       <h1 className="text-xl font-bold mb-3">Create New Book</h1>
 
-      <form onSubmit={handleSubmit(store)}>
-        <div className="w-full grid grid-cols-1 lg:grid-cols-1 2xl:grid-cols-2">
-          <div className="col-span-1">
-            {/* Image preview */}
+      <form onSubmit={handleSubmit(store)} noValidate>
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6">
+          {/* IMAGE */}
+          <div className="col-span-full">
             <div className="relative w-20 h-20 mb-4">
               <div className="w-20 h-20 rounded-full border overflow-hidden flex items-center justify-center bg-stone-100">
                 {preview ? (
                   <img
                     src={preview}
-                    alt="Book preview"
+                    {...register("image")}
+                    alt="Preview"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -93,233 +201,173 @@ const BookCreateForm = () => {
               </div>
 
               <label
-                htmlFor="update-profile-image"
-                className="absolute right-0 bottom-0 size-8 flex justify-center items-center rounded-full bg-pink-600 text-white hover:bg-pink-500 cursor-pointer"
+                htmlFor="image"
+                className="absolute right-0 bottom-0 size-8 flex items-center justify-center rounded-full bg-pink-600 text-white cursor-pointer"
               >
                 <Camera size={16} />
               </label>
 
               <input
+                id="image"
+                ref={fileRef}
                 type="file"
-                id="update-profile-image"
                 accept="image/*"
                 className="hidden"
-                {...register("image", { required: "Image is required" })}
                 onChange={handleImageChange}
               />
-            </div>
 
-            <div className="flex  justify-between gap-5 ">
-              {/* Title */}
-              <div className="mb-3 flex-1">
-                <label className="block mb-2 text-sm font-medium">
-                  Book Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("title", { required: "Book Title is required" })}
-                  className={`bg-stone-50 border ${
-                    errors.title ? "border-red-500" : "border-stone-300"
-                  } text-sm block w-full p-1.5 rounded`}
-                />
-                {errors.title && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.title.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Author */}
-              <div className="mb-3 flex-1">
-                <label className="block mb-2 text-sm font-medium">
-                  Author <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("author", {
-                    required: "Author name is required",
-                  })}
-                  className={`bg-stone-50 border ${
-                    errors.author ? "border-red-500" : "border-stone-300"
-                  } text-sm block w-full p-1.5 rounded`}
-                />
-                {errors.author && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.author.message}
-                  </p>
-                )}
-              </div>
-              {/* Category */}
-              <div className="mb-3 flex-1">
-                <label className="block mb-2 text-sm font-medium">
-                  Category <span className="text-red-500">*</span>
-                </label>
-                <select
-                  {...register("category", {
-                    required: "Category is required",
-                  })}
-                  className="bg-stone-50 border border-stone-300 text-sm block w-full p-1.5 rounded"
-                >
-                  <option value="programming">Programming</option>
-                  <option value="technology">Technology</option>
-                </select>
-                {errors.category && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.category.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex gap-5 justify-between items-center ">
-              {/* publishedYear */}
-              <div className="mb-3 relative flex-1">
-                <label className="block mb-2 text-sm font-medium">
-                  publishedYear <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  {...register("publishedYear", {
-                    required: "Published Year is required",
-                  })}
-                  className={`bg-stone-50 border ${
-                    errors.publishedYear ? "border-red-500" : "border-stone-300"
-                  } text-sm block w-full p-1.5 rounded`}
-                />
-
-                {errors.publishedYear && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.publishedYear.message}
-                  </p>
-                )}
-              </div>
-              {/* totalCopies */}
-              <div className="mb-3 relative flex-1">
-                <label className="block mb-2 text-sm font-medium">
-                  totalCopies <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  {...register("totalCopies", {
-                    required: "totalCopies is required",
-                  })}
-                  className={`bg-stone-50 border ${
-                    errors.totalCopies ? "border-red-500" : "border-stone-300"
-                  } text-sm block w-full p-1.5 rounded`}
-                />
-
-                {errors.totalCopies && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.totalCopies.message}
-                  </p>
-                )}
-              </div>
-
-              {/* availableCopies */}
-              <div className="mb-3 relative flex-1">
-                <label className="block mb-2 text-sm font-medium">
-                  availableCopies <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  {...register("availableCopies", {
-                    required: "AvailableCopies is required",
-                  })}
-                  className={`bg-stone-50 border ${
-                    errors.availableCopies
-                      ? "border-red-500"
-                      : "border-stone-300"
-                  } text-sm block w-full p-1.5 rounded`}
-                />
-
-                {errors.availableCopies && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.availableCopies.message}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-5 justify-between items-center ">
-              {/* borrowPrice */}
-              <div className="mb-3 relative flex-1">
-                <label className="block mb-2 text-sm font-medium">
-                  borrowPrice <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  {...register("borrowPrice", {
-                    required: "BorrowPrice is required",
-                  })}
-                  className={`bg-stone-50 border ${
-                    errors.borrowPrice ? "border-red-500" : "border-stone-300"
-                  } text-sm block w-full p-1.5 rounded`}
-                />
-
-                {errors.borrowPrice && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.borrowPrice.message}
-                  </p>
-                )}
-              </div>
-
-              {/* description */}
-              <div className="mb-3 flex-2">
-                <label className="block mb-2 text-sm font-medium">
-                  description <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  {...register("description", {
-                    required: "Description is required",
-                  })}
-                  className={`bg-stone-50 border ${
-                    errors.description ? "border-red-500" : "border-stone-300"
-                  } text-sm block w-full p-1.5 rounded`}
-                />
-                {errors.description && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.description.message}
-                  </p>
-                )}
-              </div>
+              {errors.image && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.image.message}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Checkbox & Buttons */}
-          <div className="col-span-full mt-5">
-            <div className="flex items-center mb-4">
-              <input
-                {...register("all_correct")}
-                required
-                id="all-correct"
-                type="checkbox"
-                className="w-4 h-4 text-indigo-600 bg-stone-100 border-stone-300 focus:ring-indigo-500"
-              />
-              <label
-                htmlFor="all-correct"
-                className="ml-2 text-sm font-medium text-stone-900"
-              >
-                Make sure all fields are correct
-              </label>
-            </div>
+          {/* TITLE */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Book Title *
+            </label>
+            <input
+              {...register("title", { required: "Book title is required" })}
+              className={`w-full p-1.5 rounded border ${
+                errors.title ? "border-red-500" : "border-stone-300"
+              }`}
+            />
+            {errors.title && (
+              <p className="text-red-500 text-sm">{errors.title.message}</p>
+            )}
+          </div>
 
-            <div className="flex items-center mb-4">
-              <input
-                {...register("back_to_customer_list")}
-                id="back-to-Customer-list"
-                type="checkbox"
-                className="w-4 h-4 text-indigo-600 bg-stone-100 border-stone-300 focus:ring-indigo-500"
-              />
-              <label
-                htmlFor="back-to-Customer-list"
-                className="ml-2 text-sm font-medium text-stone-900"
-              >
-                Back to Book List after saving
-              </label>
-            </div>
+          {/* AUTHOR */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">Author *</label>
+            <input
+              {...register("author", { required: "Author is required" })}
+              className={`w-full p-1.5 rounded border ${
+                errors.author ? "border-red-500" : "border-stone-300"
+              }`}
+            />
+            {errors.author && (
+              <p className="text-red-500 text-sm">{errors.author.message}</p>
+            )}
+          </div>
 
+          {/* CATEGORY */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">Category *</label>
+            <select
+              {...register("category", { required: "Category is required" })}
+              className="w-full p-1.5 rounded border border-stone-300"
+            >
+              <option value="">Select</option>
+              <option value="programming">Programming</option>
+              <option value="technology">Technology</option>
+            </select>
+            {errors.category && (
+              <p className="text-red-500 text-sm">{errors.category.message}</p>
+            )}
+          </div>
+
+          {/* PUBLISHED YEAR */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Published Year *
+            </label>
+            <input
+              type="number"
+              {...register("publishedYear", {
+                required: "Published year is required",
+              })}
+              className="w-full p-1.5 rounded border border-stone-300"
+            />
+          </div>
+
+          {/* TOTAL COPIES */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Total Copies *
+            </label>
+            <input
+              type="number"
+              {...register("totalCopies", {
+                required: "Total copies is required",
+              })}
+              className="w-full p-1.5 rounded border border-stone-300"
+            />
+          </div>
+
+          {/* AVAILABLE COPIES */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Available Copies *
+            </label>
+            <input
+              type="number"
+              {...register("availableCopies", {
+                required: "Available copies is required",
+              })}
+              className="w-full p-1.5 rounded border border-stone-300"
+            />
+          </div>
+
+          {/* BORROW PRICE */}
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Borrow Price *
+            </label>
+            <input
+              type="number"
+              {...register("borrowPrice", {
+                required: "Borrow price is required",
+              })}
+              className="w-full p-1.5 rounded border border-stone-300"
+            />
+          </div>
+
+          {/* DESCRIPTION */}
+          <div className="col-span-full">
+            <label className="block mb-2 text-sm font-medium">
+              Description *
+            </label>
+            <textarea
+              {...register("description", {
+                required: "Description is required",
+              })}
+              className="w-full p-1.5 rounded border border-stone-300"
+            />
+          </div>
+
+          {/* CHECKBOXES */}
+          <div className="col-span-full">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                {...register("all_correct", {
+                  required: "Please confirm all fields are correct",
+                })}
+              />
+              Make sure all fields are correct
+            </label>
+            {errors.all_correct && (
+              <p className="text-red-500 text-sm">
+                {errors.all_correct.message}
+              </p>
+            )}
+
+            <label className="flex items-center gap-2 mt-2">
+              <input type="checkbox" {...register("back_to_customer_list")} />
+              Back to Book List after saving
+            </label>
+          </div>
+
+          {/* ACTIONS */}
+          <div className="col-span-full flex gap-3">
             <button
               type="button"
               onClick={() => router.back()}
-              className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-stone-900 bg-white  border border-stone-200 hover:bg-stone-100 focus:z-10 focus:ring-4"
+              className="px-5 py-2 border"
             >
               Cancel
             </button>
@@ -327,9 +375,9 @@ const BookCreateForm = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="text-white bg-indigo-600 disabled:pointer-events-none disabled:opacity-80 inline-flex items-center justify-center gap-3 hover:bg-indigo-600 font-medium  text-sm w-full sm:w-auto px-5 py-2.5"
+              className="px-5 py-2 bg-indigo-600 text-white"
             >
-              Save
+              {isSubmitting ? "Saving..." : "Save"}
             </button>
           </div>
         </div>

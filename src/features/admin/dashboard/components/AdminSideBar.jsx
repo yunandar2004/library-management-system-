@@ -31,7 +31,7 @@ const AdminSideBar = () => {
       <nav className="flex-1 px-4 py-6 space-y-2">
         <Link
           href="/admin/dashboard"
-          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition text-nowrap
             ${
               isActive("/admin/dashboard")
                 ? "bg-white text-indigo-700"
@@ -45,7 +45,7 @@ const AdminSideBar = () => {
 
         <Link
           href="/admin/category"
-          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition text-nowrap text-nowrap
             ${
               isActive("/admin/category")
                 ? "bg-white text-indigo-700"
@@ -59,7 +59,7 @@ const AdminSideBar = () => {
 
         <Link
           href="/admin/books"
-          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition text-nowrap
             ${
               isActive("/admin/books" || "/admin/books/create" || "/admin/books/edit" || "/admin/books/$id")
                 ? "bg-white text-indigo-700"
@@ -73,7 +73,7 @@ const AdminSideBar = () => {
 
         <Link
           href="/admin/user"
-          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition
+          className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition text-nowrap
             ${
               isActive("/admin/user" || "/admin/user/create" || "/admin/user/edit" || "/admin/user/$id")
                 ? "bg-white text-indigo-700"
@@ -88,7 +88,7 @@ const AdminSideBar = () => {
 
       {/* Logout */}
       <div className="px-4 py-6 border-t border-indigo-600">
-        <button className="flex items-center gap-3 w-full px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-600 transition" onClick={handleClick}>
+        <button className="flex items-center gap-3 w-full px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-600 transition text-nowrap" onClick={handleClick}>
           <LogOut size={18} />
           Log Out
         </button>

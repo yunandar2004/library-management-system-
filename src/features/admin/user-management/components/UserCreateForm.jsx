@@ -11,7 +11,7 @@ const UserCreateForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const fileRef = useRef(null);
 
-   const {
+  const {
     store,
     register,
     handleSubmit,
@@ -21,71 +21,7 @@ const UserCreateForm = () => {
     handlePhoneCheck,
   } = useCreateCustomer();
 
-  // // const {
-  // //   register,
-  // //   handleSubmit,
-  // //   formState: { errors, isSubmitting },
-  // // } = useForm({
-  // //   defaultValues: {
-  // //     isActive: true,
-  // //     role: "user",
-  // //   },
-  // // });
 
-  // // const onSubmit = async (data) => {
-  // //   try {
-  // //     const { res, data: result } = await userAdd({
-  // //       name: data.name,
-  // //       email: data.email,
-  // //       password: data.password,
-  // //       role: data.role,
-  // //       isActive: data.isActive,
-  // //       image: data.image, // 👈 comes from react-hook-form file input
-  // //     });
-
-  // //     if (!res.ok) {
-  // //       throw new Error(result.message || "Adding User failed.");
-  // //     }
-  // //     toast.success("User added successfully!");
-  // //   } catch (error) {
-  // //     toast.error(error.message);
-  // //   }
-  // // };
-  // // UserCreateForm.jsx
-  // // ... (keep all your imports and state)
-
-  // const onSubmit = async (data) => {
-  //   // 1. Create a new FormData object
-  //   const formData = new FormData();
-
-  //   // 2. Append all non-file fields
-  //   formData.append("name", data.name);
-  //   formData.append("email", data.email);
-  //   formData.append("password", data.password);
-  //   formData.append("role", data.role);
-  //   // Convert boolean to string if your backend expects a string or int
-  //   formData.append("isActive", data.isActive ? "true" : "false");
-
-  //   // 3. Append the file. Check if a file was selected.
-  //   // react-hook-form gives the file input as an array/FileList
-  //   if (data.image && data.image.length > 0) {
-  //     // 'image' here should match the key your backend is expecting for the file
-  //     formData.append("image", data.image[0]);
-  //   }
-
-  //   try {
-  //     // 4. Pass the formData object to the userAdd service
-  //     const { res, data: result } = await userAdd(formData);
-  //     if (!res.ok) {
-  //       throw new Error(result.message || "Adding User failed.");
-  //     }
-  //     toast.success("User added successfully!");
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //   }
-  // };
-
-  // ... (rest of the component)
   return (
     <div className="px-10 w-full">
       <h1 className="text-xl font-bold mb-3">Create New User</h1>
@@ -214,6 +150,20 @@ const UserCreateForm = () => {
 
           {/* Footer */}
           <div className="col-span-full mt-5">
+            <div className="flex items-center mb-4">
+              <input
+                {...register("back_to_customer_list")}
+                id="back-to-Customer-list"
+                type="checkbox"
+                className="w-4 h-4 text-indigo-600 bg-stone-100 border-stone-300 focus:ring-indigo-500"
+              />
+              <label
+                htmlFor="back-to-Customer-list"
+                className="ml-2 text-sm font-medium text-stone-900"
+              >
+                Back to Book List after saving
+              </label>
+            </div>
             <button
               type="button"
               className="py-1.5 px-5 mr-2 rounded bg-gray-50"

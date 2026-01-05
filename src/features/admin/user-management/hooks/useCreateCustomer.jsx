@@ -33,7 +33,7 @@ const useCreateCustomer = () => {
       reset();
 
       if (formData.back_to_customer_list) {
-        router.push("/dashboard/customer");
+        router.push("/admin/user");
       }
     } catch (err) {
       toast.error(err.message);

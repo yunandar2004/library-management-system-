@@ -62,7 +62,7 @@ const UserRow = ({ user }) => {
           <BanIcon className="size-4.5 text-red-500" />
           <Edit className="size-4.5" />
           <Link
-            href={`/dashboard/sale/$id`}
+            href={`/admin/user/${user._id}`}
             className="size-5 flex justify-center items-center bg-white border border-stone-200 hover:bg-stone-100"
           >
             <ArrowRight className="size-4" />

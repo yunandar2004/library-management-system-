@@ -15,7 +15,7 @@ const CategoriesPage = () => {
         <CategoriesSection />
         {/* <BookCatelog /> */}
         <BookList />
-        <Pagination />
+
       </Container>
       <HomeFooter />
     </>
