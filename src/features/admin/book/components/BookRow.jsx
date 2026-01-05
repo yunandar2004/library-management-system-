@@ -3,7 +3,9 @@ import { ArrowRight, Edit, Timer, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { useSWRConfig } from "swr";
 
 const BookRow = ({ book }) => {
   const date = new Date(book.updatedAt);
@@ -12,30 +14,55 @@ const BookRow = ({ book }) => {
   const timeString = date.toLocaleTimeString(); // "1:29:18 PM"
   const searchParams = useSearchParams();
 
+  // const { id } = useParams();
+
+  const {mutate} = useSWRConfig();
+
+  const handleEditBtn = () => {};
+
+  // const handleDeleteBtn = async () => {
+  //   // if (
+  //   //   !confirm(
+  //   //     archived_at
+  //   //       ? "Are you sure to restore customer?"
+  //   //       : "Are you sure to remove customers?"
+  //   //   )
+  //   // )
+  //   //   return;
+
+  //   // const toastId = toast.loading(
+  //   //   archived_at ? "Restoring customer..." : "Deleting customer..."
+  //   // );
+
+  //   try {
+  //     const res = await destroyBook(id);
+  //     const json = await res.json();
+  //     if (!res.ok) {
+  //       throw new Error(json.message);
+  //     }
+  //     toast.success(json.message);
+  //     mutate(`${bookApiURL}?${searchParams.toString()}`);
+  //   } catch (err) {
+  //     toast.error(err.message);
+  //     console.error(err);
+  //   }
+  // };
+
   const handleDeleteBtn = async () => {
-    // if (
-    //   !confirm(
-    //     archived_at
-    //       ? "Are you sure to restore customer?"
-    //       : "Are you sure to remove customers?"
-    //   )
-    // )
-    //   return;
-
-    // const toastId = toast.loading(
-    //   archived_at ? "Restoring customer..." : "Deleting customer..."
-    // );
-
+    confirm("Are you sure to remove book?");
     try {
-      const res = await destroyBook(id);
+      const res = await destroyBook(book._id);
       const json = await res.json();
+
       if (!res.ok) {
         throw new Error(json.message);
       }
-      toast.success(json.message, { id: toastId });
-      mutate(`${bookApiURL}?${searchParams.toString()}`);
+
+      toast.success(json.message);
+      // mutate(`${bookApiURL}?${searchParams.toString()}`);
+      mutate(`${bookApiURL}`);
     } catch (err) {
-      toast.error(err.message, { id: toastId });
+      toast.error(err.message);
       console.error(err);
     }
   };
@@ -108,8 +135,8 @@ const BookRow = ({ book }) => {
         <Trash2 className="size-4.5" onClick={handleDeleteBtn} />
 
         <Link
-          href={`/dashboard/sale/$id`}
-          className="size-5 flex justify-center items-center  bg-white border border-stone-200    hover:bg-stone-100 hover:text-pink-700 focus:z-10 focus:ring-2 focus:ring-pink-700 focus:text-pink-700 dark:bg-stone-800 dark:border-stone-700 dark:text-white dark:hover:text-white dark:hover:bg-stone-700 dark:focus:ring-pink-500 dark:focus:text-white"
+          href={`/admin/books/${book._id}`}
+          className="size-5 flex justify-center items-center  bg-white border border-stone-200    hover:bg-stone-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700 dark:bg-stone-800 dark:border-stone-700 dark:text-white dark:hover:text-white dark:hover:bg-stone-700 dark:focus:ring-indigo-500 dark:focus:text-white"
         >
           <ArrowRight className="size-4" />
         </Link>

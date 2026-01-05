@@ -61,7 +61,7 @@ const AdminSideBar = () => {
           href="/admin/books"
           className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition
             ${
-              isActive("/admin/books")
+              isActive("/admin/books" || "/admin/books/create" || "/admin/books/edit" || "/admin/books/$id")
                 ? "bg-white text-indigo-700"
                 : "hover:bg-indigo-600"
             }
@@ -75,7 +75,7 @@ const AdminSideBar = () => {
           href="/admin/user"
           className={`flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition
             ${
-              isActive("/admin/user")
+              isActive("/admin/user" || "/admin/user/create" || "/admin/user/edit" || "/admin/user/$id")
                 ? "bg-white text-indigo-700"
                 : "hover:bg-indigo-600"
             }
