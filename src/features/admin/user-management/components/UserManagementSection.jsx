@@ -15,7 +15,6 @@ const UserManagementSection = () => {
   if (isLoading) {
     return <UserEmptyStage />;
   }
-  console.log(data);
 
 
   return (

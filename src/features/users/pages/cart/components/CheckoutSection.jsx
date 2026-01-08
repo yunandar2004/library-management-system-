@@ -1,7 +1,28 @@
 "use client";
+import { cartApiURL, fetchCart } from "@/services/cart";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import useSWR from "swr";
 function CheckoutSection() {
+   const { data, isLoading, error } = useSWR(cartApiURL, fetchCart);
+  const [cart, setCart] = useState([]);
+
+  // Set cart from fetched data
+  useEffect(() => {
+    if (data?.cart?.items) {
+      setCart(data.cart.items);
+    }
+  }, [data]);
+
+  // Correct subtotal calculation using reduce
+  const subtotal = cart.reduce((sum, item) => {
+    return sum + item.price * item.qty;
+  }, 0);
+
+  const shipping = 7;
+  const tax = Math.round(subtotal * 0.02);
+  const total = subtotal + tax + shipping;
+
   return (
     <div className="min-h-screen flex items-center justify-center  ">
       <div className="w-full max-w-6xl bg-white rounded-2xl shadow-lg p-5 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -84,19 +105,19 @@ function CheckoutSection() {
           <h3 className="font-medium">Order summary</h3>
           <div className="flex justify-between text-sm">
             <span>Subtotal</span>
-            <span>50,000 MMK</span>
+            <span>{subtotal} $</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Shipping</span>
-            <span>3,000 MMK</span>
+            <span>{shipping} $</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Tax</span>
-            <span>2,500 MMK</span>
+            <span>{tax} $</span>
           </div>
           <div className="border-t pt-4 flex justify-between font-semibold">
             <span>Total</span>
-            <span>55,500 MMK</span>
+            <span>{total} MMK</span>
           </div>
           {/* <button className="w-full bg-indigo-600 text-white rounded-lg py-3 text-sm font-medium hover:bg-indigo-700 transition"> */}
           <Link href={"/user/cart/checkout/orderConfirmation"}>

@@ -16,7 +16,6 @@ const BookSection = () => {
   if (isLoading) {
     return <div className="">Loading...........</div>;
   }
-  console.log(data);
 
 
   return (

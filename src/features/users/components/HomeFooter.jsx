@@ -5,7 +5,7 @@ import { Youtube, YoutubeIcon } from "lucide-react";
 const HomeFooter = ({className}) => {
   return (
     <>
-      <section className={`bg-indigo-200 py-2 mt-12 left-0 right-0 bottom-0 ${className}`}>
+      <section className={`bg-indigo-200 py-2 mt-2 left-0 right-0 bottom-0 ${className}`}>
         {/* Footer */}
         <div className=" bottom-6">
           <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-xs text-indigo-900/70">

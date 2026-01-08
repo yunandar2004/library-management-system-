@@ -21,7 +21,6 @@ const HomePage = () => {
   const router = useRouter()
   useEffect(() => {
     if(!token){
-      // console.log("You are login");
       router.push("/")
     }
   },[token])

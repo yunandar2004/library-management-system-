@@ -16,7 +16,6 @@ const BookDetailSection = () => {
     fetchBook
   );
 
-  console.log(params.id);
 
   if (isLoading) {
     return <p>Loading book details...</p>;

@@ -16,7 +16,6 @@ const UserDetailSection = () => {
     fetchUser
   );
 
-  console.log(params.id);
 
   if (isLoading) {
     return <p>Loading user details...</p>;
@@ -32,7 +31,6 @@ const UserDetailSection = () => {
 
   const { name, email, createdAt, isActive, image, role } = data;
 
-  console.log(data);
 
   return (
     <section className="w-full space-y-4 px-10">

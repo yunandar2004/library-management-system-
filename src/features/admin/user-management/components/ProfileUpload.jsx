@@ -20,21 +20,7 @@ function ProfileUpload() {
       return;
     }
 
-    // const formData = new FormData();
-    // formData.append("profile", image);
 
-    // try {
-    //   const response = await fetch("http://localhost:5000/upload", {
-    //     method: "POST",
-    //     body: formData,
-    //   });
-
-    //   const data = await response.json();
-    //   console.log(data);
-    //   alert("Profile uploaded successfully!");
-    // } catch (error) {
-    //   console.error("Upload error:", error);
-    // }
   };
 
   return (
