@@ -17,12 +17,14 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
-    name: String,
-    email: String,
-    password: String,
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true },
+    password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     isActive: { type: Boolean, default: true },
-    image: { type: String, default: "" }, // 👈 store image URL or filename
+    phone: { type: String, trim: true },
+    image: { type: String, default: "" },
+    isBanned: { type: Boolean, default: false }, // ✅ new field
   },
   { timestamps: true }
 );

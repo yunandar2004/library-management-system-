@@ -44,6 +44,9 @@ exports.create = async (req, res) => {
     password: Joi.string().min(6).required(),
     role: Joi.string().valid("admin", "user").default("user"),
     isActive: Joi.boolean().default(true),
+    phone: Joi.string().optional(),
+    image: Joi.string().uri().allow(""),
+    isBanned: Joi.boolean().default(false),
   });
 
   const { error, value } = schema.validate(req.body);
@@ -61,7 +64,9 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string(),
+    email: Joi.string().email(), // ✅ allow email
     role: Joi.string().valid("admin", "user"),
+    phone: Joi.string().optional(),
     isActive: Joi.boolean(),
   });
 
@@ -84,14 +89,65 @@ exports.remove = async (req, res) => {
 };
 
 // Ban user (admin only)
+// exports.banUser = async (req, res) => {
+//   try {
+//     const user = await User.findByIdAndUpdate(
+//       req.params.id,
+//       { isBanned: true },
+//       { new: true }
+//     );
+//     if (!user) return res.status(404).json({ message: "User not found" });
+//     res.json({ message: "User banned successfully", user });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// exports.restoreUser = async (req, res) => {
+//   try {
+//     const user = await User.findByIdAndUpdate(
+//       req.params.id,
+//       { isBanned: false },
+//       { new: true }
+//     );
+//     if (!user) return res.status(404).json({ message: "User not found" });
+//     res.json({ message: "User restored successfully", user });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 exports.banUser = async (req, res) => {
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    { isActive: false },
-    { new: true }
-  );
-  if (!user) return res.status(404).json({ message: "User not found" });
-  res.json({ message: "User banned", user });
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { isBanned: true, isActive: false }, // ✅ ban + deactivate
+      { new: true }
+    ).select("-password");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ message: "User banned successfully", user });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Restore user
+exports.restoreUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { isBanned: false, isActive: true }, // ✅ restore + activate
+      { new: true }
+    ).select("-password");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ message: "User restored successfully", user });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 // Edit user (admin only)

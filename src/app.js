@@ -1,6 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 // Routes
 const adminRoutes = require("./routes/adminRoutes");
@@ -17,6 +21,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(helmet());
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+
+// Static uploads
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Mount routes
 app.use("/api/auth", authRoutes);
@@ -38,5 +47,8 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ message: "Server error" });
 });
+
+// const borrowRoutes = require("./routes/borrowRoutes");
+app.use("/api/borrows", borrowRoutes);
 
 module.exports = app;

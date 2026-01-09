@@ -19,10 +19,13 @@ router.get("/user-only", auth, allowRoles("user"), (req, res) => {
 });
 
 // Self routes
-router.get("/me", auth, userCtrl.me);
+// router.get("/me", auth, userCtrl.me);
 router.put("/me/password", auth, userCtrl.changePassword);
 router.put("/me/profile", auth, userCtrl.updateProfile);
 router.delete("/me", auth, userCtrl.deleteSelf);
+router.put("/:id/ban", auth, allowRoles("admin"), userCtrl.banUser);
+router.put("/:id/restore", auth, allowRoles("admin"), userCtrl.restoreUser);
+
 
 // Admin routes
 router.get("/", auth, allowRoles("admin"), userCtrl.list);
@@ -31,7 +34,7 @@ router.get("/:id", auth, allowRoles("admin"), userCtrl.detail); // 👈 ADD THIS
 router.put("/:id", auth, allowRoles("admin"), userCtrl.update);
 router.delete("/:id", auth, allowRoles("admin"), userCtrl.remove); // ✅ FIXED
 
-router.put("/:id/ban", auth, allowRoles("admin"), userCtrl.banUser);
+// router.put("/:id/ban", auth, allowRoles("admin"), userCtrl.banUser);
 router.put("/:id/edit", auth, allowRoles("admin"), userCtrl.editUser);
 
 // Upload profile image (self)
