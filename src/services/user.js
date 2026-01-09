@@ -6,12 +6,24 @@ export const fetchUser = (...args) =>
   fetch(...args, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
+      // "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   }).then((res) => res.json());
 
+// export const changeImage = (file, id) => {
+//   const formData = new FormData();
+//   formData.append("profile_image", file);
 
+//   return fetch(`${userApiUrl}/change-profile-image/${id}`, {
+//     method: "POST",
+//     body: formData,
+//     headers: {
+//       Accept: "application/json",
+//       Authorization: `Bearer ${useAccountStore.getState().token}`,
+//     },
+//   });
+// };
 
 export const storeUser = (data) => {
   return fetch(userApiURL, {

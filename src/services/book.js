@@ -26,18 +26,7 @@ export const bookAdd = async (payload) => {
   return res;
 };
 
-// export const bookDetail = async (id) => {
-//   const res = await fetch(`${bookDetailApiURL}`, {
-//     method: "GET",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: `Bearer ${token}`,
-//     },
-//   });
-//   return res.json().then((data) => {
-//     return data;
-//   });
-// };
+
 
 export const destroyBook = (id) => {
   return fetch(`${bookApiURL}/${id}`, {
@@ -60,5 +49,16 @@ export const changeImage = (file, id) => {
       Accept: "application/json",
       Authorization: `Bearer ${useAccountStore.getState().token}`,
     },
+  });
+};
+
+export const updateBook = (id, payload) => {
+  return fetch(`${bookApiURL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
   });
 };

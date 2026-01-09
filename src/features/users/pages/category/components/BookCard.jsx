@@ -53,16 +53,14 @@ const BookCard = ({ book }) => {
 
   return (
     <div className="bg-white rounded-xl shadow p-4 flex flex-col">
-      <div className="flex justify-between items-center">
-        <div className="">
-          <img
-            src={book.image || "/user.png"}
-            alt={book.title}
-            className="h-40 w-full object-cover rounded"
-          />
-        </div>
-        <div className="bg-green-400 text-white px-6 py-2 font-sans rounded">
-          Available
+      <div className="flex justify-between gap-5">
+        <img
+          src={book.image || "/user.png"}
+          alt={book.title}
+          className="h-40 w-full object-cover rounded"
+        />
+        <div className=" ">
+          <p className="bg-green-400 text-xs text-white px-4 py-1 font-sans rounded-xl">Available</p>
         </div>
       </div>
       <div className="">

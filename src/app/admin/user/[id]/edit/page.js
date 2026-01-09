@@ -1,9 +1,8 @@
-import React from 'react'
+import UserEditPage from "@/features/admin/user-management/pages/UserEditPage";
+import React from "react";
 
 const Page = () => {
-  return (
-    <div>Page</div>
-  )
-}
+  return <UserEditPage />;
+};
 
-export default Page
+export default Page;

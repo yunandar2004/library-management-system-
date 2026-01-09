@@ -16,7 +16,7 @@ const BookRow = ({ book }) => {
 
   // const { id } = useParams();
 
-  const {mutate} = useSWRConfig();
+  const { mutate } = useSWRConfig();
 
   const handleEditBtn = () => {};
 
@@ -131,7 +131,13 @@ const BookRow = ({ book }) => {
       </th>
 
       <td className="px-6 py-3 text-end flex gap-3">
-        <Edit className="size-4.5" />
+        <Link
+          href={`/admin/books/${book._id}/edit`}
+          className="size-5 flex justify-center items-center  bg-white border border-stone-200    hover:bg-stone-100 hover:text-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-700 focus:text-indigo-700 dark:bg-stone-800 dark:border-stone-700 dark:text-white dark:hover:text-white dark:hover:bg-stone-700 dark:focus:ring-indigo-500 dark:focus:text-white"
+        >
+          <Edit className="size-4.5" />
+        </Link>
+
         <Trash2 className="size-4.5" onClick={handleDeleteBtn} />
 
         <Link

@@ -8,7 +8,7 @@ const BorrowedBookPage = () => {
     <div>
         <Header/>
         <BorrowedBookSection/>
-        <HomeFooter/>
+        <HomeFooter className={`sticky mt-20 `}/>
     </div>
   )
 }

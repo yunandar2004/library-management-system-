@@ -8,7 +8,7 @@ const UserDetailPage = () => {
     <DashboardLayout>
         <BreadCrumb
           homeTitle={"User Management"}
-          homePath={"/admin/user-management"}
+          homePath={"/admin/user"}
           currentPageTitle={"User Detail"}
         />
       <UserDetailSection />

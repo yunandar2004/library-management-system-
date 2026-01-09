@@ -11,10 +11,10 @@ const BookLayout = () => {
   const [page, setPage] = useState(1);
 
   return (
-    <>
-      <Header />
+    <section className="h-screen">
+      <Header className={`sticky top-0 left-0 right-0 w-full`} />
       <Container>
-        <section className="flex gap-2 mb-4 mt-19">
+        <section className="flex gap-2 my-4 ">
           <button
             onClick={() => {
               setTab("borrowed");
@@ -38,14 +38,19 @@ const BookLayout = () => {
             Returned Books
           </button>
         </section>
+        <div className="">
+          {/* {tab === "borrowed" ? <BorrowedBookPage /> : <ReturnedBookPage />} */}
+          <BorrowedBookSection
+            tab={tab}
+            setTab={setTab}
+            page={page}
+            setPage={setPage}
+          />
+        </div>
       </Container>
-      <div className="">
-        {/* {tab === "borrowed" ? <BorrowedBookPage /> : <ReturnedBookPage />} */}
-        <BorrowedBookSection tab={tab} setTab={setTab} page={page} setPage={setPage} />
-      </div>
 
-      <HomeFooter />
-    </>
+      <HomeFooter className={`mt-auto fixed bottom-0 left-0 right-0 w-full`} />
+    </section>
   );
 };
 

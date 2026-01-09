@@ -43,7 +43,7 @@ const ModuleListSection = () => {
           // icon: <MessagesSquare className=" size-7" />,
           icon: <Monitor className=" size-7" />,
 
-          url: "/admin/borrowed-books",
+          url: "/admin/borrows",
         },
         {
           name: "Manage Returned Books",

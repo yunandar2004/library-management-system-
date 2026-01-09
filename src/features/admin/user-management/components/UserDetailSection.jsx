@@ -6,6 +6,8 @@ import { userApiURL } from "@/services/user"; // make sure you have this
 import { fetchUser } from "@/services/user"; // fetch a single user by ID
 import React from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
+import { Edit } from "lucide-react";
 
 const UserDetailSection = () => {
   const params = useParams();
@@ -15,7 +17,6 @@ const UserDetailSection = () => {
     `${userApiURL}/${params.id}`,
     fetchUser
   );
-
 
   if (isLoading) {
     return <p>Loading user details...</p>;
@@ -30,7 +31,6 @@ const UserDetailSection = () => {
   }
 
   const { name, email, createdAt, isActive, image, role } = data;
-
 
   return (
     <section className="w-full space-y-4 px-10">

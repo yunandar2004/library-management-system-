@@ -24,8 +24,6 @@ const CartSectionPage = () => {
         </Container>
       </div>
 
-      {/* Footer */}
-      {/* <HomeFooter /> */}
     </div>
   );
 };

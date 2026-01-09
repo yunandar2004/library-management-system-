@@ -1,57 +1,82 @@
 "use client";
 
 import { Camera } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { bookAdd } from "@/services/book";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import useSWR, { useSWRConfig } from "swr";
+import { bookApiURL, fetchBook, updateBook } from "@/services/book";
 import { token } from "@/services/profile";
 
-const BookCreateForm = () => {
+const BookEditForm = ({ bookId }) => {
   const router = useRouter();
-  const fileRef = useRef(null);
+  const params = useParams();
+  const id = bookId || params?.id;
 
   const [preview, setPreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting, errors },
     reset,
-    setValue,
-  } = useForm({
-    defaultValues: {
-      image: null,
-    },
-  });
+    formState: { isSubmitting, errors },
+  } = useForm();
 
-  // Handle image selection
+  const { mutate } = useSWRConfig();
+  const { data } = useSWR(id ? `${bookApiURL}/${id}` : null, fetchBook);
+
+  /* populate form */
+  useEffect(() => {
+    if (data) {
+      reset({
+        title: data.title,
+        author: data.author,
+        category: data.category,
+        publishedYear: data.publishedYear,
+        totalCopies: data.totalCopies,
+        availableCopies: data.availableCopies,
+        borrowPrice: data.borrowPrice,
+        description: data.description,
+      });
+      setPreview(data.image);
+    }
+  }, [data, reset]);
+
+  /* image handler */
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
+    setImageFile(file);
     setPreview(URL.createObjectURL(file));
-
-    // IMPORTANT: tell RHF to validate
-    setValue("image", file, { shouldValidate: true });
   };
 
-  // Cleanup image preview
-  useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
-  }, [preview]);
+  /* upload image separately */
+  const uploadImage = async () => {
+    if (!imageFile) return;
+    const payload = new FormData();
+    payload.append("image", imageFile);
 
-  const store = async (formData) => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/books/${id}/image`,
+      {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+        body: payload,
+      }
+    );
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.message);
+  };
+
+  /* submit book details */
+  const onSubmit = async (formData) => {
     try {
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/books`;
-
-      const res = await fetch(apiUrl, {
-        method: "POST",
+      const res = await fetch(`${bookApiURL}/${id}`, {
+        method: "PUT",
         headers: {
-          "Content-Type": "application/json", // ✅ REQUIRED
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
@@ -63,69 +88,55 @@ const BookCreateForm = () => {
           availableCopies: Number(formData.availableCopies),
           borrowPrice: Number(formData.borrowPrice),
           description: formData.description,
-          image: formData.imageUrl || "", // must be string
         }),
       });
 
       const json = await res.json();
       if (!res.ok) throw new Error(json.message);
 
-      toast.success("Book created successfully");
-      reset();
-      setPreview(null);
+      // upload image if changed
+      if (imageFile) await uploadImage();
+
+      mutate(`${bookApiURL}/${id}`);
+      toast.success("Book updated successfully");
       router.push("/admin/books");
     } catch (err) {
-      toast.error(err.message || "Something went wrong");
-      console.error(err);
+      toast.error(err.message || "Failed to update book");
     }
   };
 
   return (
     <div className="px-10 w-full">
-      <h1 className="text-xl font-bold mb-3">Create New Book</h1>
+      <h1 className="text-xl font-bold mb-3">Edit Book</h1>
 
-      <form onSubmit={handleSubmit(store)} noValidate>
-        <div className="grid grid-cols-1 md:grid-cols-3  2xl:grid-cols-2 gap-3">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-2 gap-3">
           {/* IMAGE */}
           <div className="col-span-full">
             <div className="relative w-20 h-20 mb-4">
               <div className="w-20 h-20 rounded-full border overflow-hidden flex items-center justify-center bg-stone-100">
                 {preview ? (
-                  <img
-                    src={preview}
-                    {...register("image")}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={preview} className="w-full h-full object-cover" />
                 ) : (
                   <Camera size={20} className="text-stone-400" />
                 )}
               </div>
-
               <label
                 htmlFor="image"
                 className="absolute right-0 bottom-0 size-8 flex items-center justify-center rounded-full bg-pink-600 text-white cursor-pointer"
               >
                 <Camera size={16} />
               </label>
-
               <input
                 id="image"
-                ref={fileRef}
                 type="file"
                 accept="image/*"
                 className="hidden"
                 onChange={handleImageChange}
               />
-
-              {errors.image && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.image.message}
-                </p>
-              )}
             </div>
           </div>
-     
+
           {/* TITLE */}
           <div>
             <label className="block mb-1 text-sm font-medium">
@@ -137,9 +148,6 @@ const BookCreateForm = () => {
                 errors.title ? "border-red-500" : "border-stone-300"
               }`}
             />
-            {errors.title && (
-              <p className="text-red-500 text-sm">{errors.title.message}</p>
-            )}
           </div>
 
           {/* AUTHOR */}
@@ -151,9 +159,6 @@ const BookCreateForm = () => {
                 errors.author ? "border-red-500" : "border-stone-300"
               }`}
             />
-            {errors.author && (
-              <p className="text-red-500 text-sm">{errors.author.message}</p>
-            )}
           </div>
 
           {/* CATEGORY */}
@@ -167,12 +172,30 @@ const BookCreateForm = () => {
               <option value="programming">Programming</option>
               <option value="technology">Technology</option>
             </select>
-            {errors.category && (
-              <p className="text-red-500 text-sm">{errors.category.message}</p>
-            )}
           </div>
 
           {/* PUBLISHED YEAR */}
+          {/* <div>
+            <label className="block mb-1 text-sm font-medium">
+              Published Year *
+            </label>
+            <input
+              type="number"
+              //   defaultValue={data?.items.publishedYear}
+              {...register("publishedYear", {
+                required: "Published year is required",
+              })}
+              className={`w-full p-1.5 rounded border ${
+                errors.publishedYear ? "border-red-500" : "border-stone-300"
+              }`}
+            />
+            {errors.publishedYear && (
+              <p className="text-red-500 text-sm">
+                {errors.publishedYear.message}
+              </p>
+            )}
+          </div> */}
+
           <div>
             <label className="block mb-1 text-sm font-medium">
               Published Year *
@@ -182,8 +205,15 @@ const BookCreateForm = () => {
               {...register("publishedYear", {
                 required: "Published year is required",
               })}
-              className="w-full p-1.5 rounded border border-stone-300"
+              className={`w-full p-1.5 rounded border ${
+                errors.publishedYear ? "border-red-500" : "border-stone-300"
+              }`}
             />
+            {errors.publishedYear && (
+              <p className="text-red-500 text-sm">
+                {errors.publishedYear.message}
+              </p>
+            )}
           </div>
 
           {/* TOTAL COPIES */}
@@ -196,8 +226,15 @@ const BookCreateForm = () => {
               {...register("totalCopies", {
                 required: "Total copies is required",
               })}
-              className="w-full p-1.5 rounded border border-stone-300"
+              className={`w-full p-1.5 rounded border ${
+                errors.totalCopies ? "border-red-500" : "border-stone-300"
+              }`}
             />
+            {errors.totalCopies && (
+              <p className="text-red-500 text-sm">
+                {errors.totalCopies.message}
+              </p>
+            )}
           </div>
 
           {/* AVAILABLE COPIES */}
@@ -210,8 +247,15 @@ const BookCreateForm = () => {
               {...register("availableCopies", {
                 required: "Available copies is required",
               })}
-              className="w-full p-1.5 rounded border border-stone-300"
+              className={`w-full p-1.5 rounded border ${
+                errors.availableCopies ? "border-red-500" : "border-stone-300"
+              }`}
             />
+            {errors.availableCopies && (
+              <p className="text-red-500 text-sm">
+                {errors.availableCopies.message}
+              </p>
+            )}
           </div>
 
           {/* BORROW PRICE */}
@@ -224,12 +268,19 @@ const BookCreateForm = () => {
               {...register("borrowPrice", {
                 required: "Borrow price is required",
               })}
-              className="w-full p-1.5 rounded border border-stone-300"
+              className={`w-full p-1.5 rounded border ${
+                errors.borrowPrice ? "border-red-500" : "border-stone-300"
+              }`}
             />
+            {errors.borrowPrice && (
+              <p className="text-red-500 text-sm">
+                {errors.borrowPrice.message}
+              </p>
+            )}
           </div>
 
           {/* DESCRIPTION */}
-          <div className="col-span-2 ">
+          <div className="col-span-2">
             <label className="block mb-1 text-sm font-medium">
               Description *
             </label>
@@ -237,31 +288,15 @@ const BookCreateForm = () => {
               {...register("description", {
                 required: "Description is required",
               })}
-              className="w-full p-1.5 rounded border border-stone-300"
+              className={`w-full p-1.5 rounded border ${
+                errors.description ? "border-red-500" : "border-stone-300"
+              }`}
             />
-          </div>
-
-          {/* CHECKBOXES */}
-          <div className="col-span-full">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                {...register("all_correct", {
-                  required: "Please confirm all fields are correct",
-                })}
-              />
-              Make sure all fields are correct
-            </label>
-            {errors.all_correct && (
+            {errors.description && (
               <p className="text-red-500 text-sm">
-                {errors.all_correct.message}
+                {errors.description.message}
               </p>
             )}
-
-            <label className="flex items-center gap-2 mt-2">
-              <input type="checkbox" {...register("back_to_customer_list")} />
-              Back to Book List after saving
-            </label>
           </div>
 
           {/* ACTIONS */}
@@ -273,13 +308,12 @@ const BookCreateForm = () => {
             >
               Cancel
             </button>
-
             <button
               type="submit"
               disabled={isSubmitting}
               className="px-3 py-1.5 rounded-md mb-1 bg-indigo-600 text-white"
             >
-              {isSubmitting ? "Saving..." : "Save"}
+              {isSubmitting ? "Saving..." : "Update Book"}
             </button>
           </div>
         </div>
@@ -288,4 +322,4 @@ const BookCreateForm = () => {
   );
 };
 
-export default BookCreateForm;
+export default BookEditForm;

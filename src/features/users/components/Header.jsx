@@ -1,18 +1,29 @@
 "use client";
 
 import Container from "@/components/Container";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Menu, X, LogOut } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import useSWR from "swr";
+import { fetchUser, userApiURL } from "@/services/user";
+import useAccountStore from "@/store/useAccountStore";
 
-const Header = ({ className }) => {
+const Header = ({ className = "" }) => {
+  const pathname = usePathname();
+  const params = useParams();
   const [open, setOpen] = useState(false);
-  const pathname = usePathname(); // current route
-
+  const { logout } = useAccountStore();
+  const router = useRouter();
   const handleClick = () => {
-    setOpen(!open);
+    logout();
+    router.push("/");
   };
+
+  const { data: user } = useSWR(
+    params?.id ? `${userApiURL}/${params.id}` : null,
+    fetchUser
+  );
 
   const navItems = [
     { href: "/user/home", label: "Home" },
@@ -23,29 +34,24 @@ const Header = ({ className }) => {
   ];
 
   return (
-    <div
-      className={`bg-blue-100 py-3 sticky mb-2 right-0 left-0 top-0 z-50 ${className}`}
-    >
+    <header className={`sticky top-0 z-50 bg-blue-100 shadow-sm ${className}`}>
       <Container>
-        <nav className="flex justify-between items-center">
+        <nav className="flex items-center justify-between py-3">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-3">
-            <img src="/logo.png" alt="library logo" />
-            <p className="font-serif font-bold text-xl text-primary">
-              Book Bridge
-            </p>
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="Library logo" className="h-8 w-8" />
+            <span className="text-xl font-bold text-blue-700">Book Bridge</span>
           </div>
 
-          {/* Navigation */}
-          <ul className="flex justify-between items-center gap-3">
+          {/* Desktop Navigation */}
+          <ul className="hidden md:flex items-center gap-5">
             {navItems.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  onClick={handleClick}
-                  className={`font-san text-sm transition ${
+                  className={`text-sm font-medium transition ${
                     pathname === item.href
-                      ? "text-blue-700 font-bold underline" // active style
+                      ? "text-blue-700 underline"
                       : "text-gray-700 hover:text-blue-700"
                   }`}
                 >
@@ -55,22 +61,75 @@ const Header = ({ className }) => {
             ))}
           </ul>
 
-          {/* Right side */}
-          <div className="flex justify-between items-center gap-3">
-            <Link href="/user/cart" className="hover:text-blue-700 text-sm">
-              <ShoppingCart className="size-6" />
+          {/* Right Side */}
+          <div className="flex items-center gap-4">
+            <Link href="/user/cart" className="hover:text-blue-700">
+              <ShoppingCart className="h-6 w-6" />
             </Link>
-            <div className="flex justify-center items-center gap-1">
-              <div className="size-8 border border-blue-700 rounded-full"></div>
-              <div className="flex flex-col">
-                <p className="text-sm font-semibold font-sans">name</p>
-                <p className="text-xs font-sans">haha@gmail.com</p>
+
+            {/* User Info (desktop) */}
+            <div className="hidden md:flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full border border-blue-700" />
+              {/* <div className="leading-tight">
+                <p className="text-sm font-semibold">{user?.name || "User"}</p>
+                <p className="text-xs text-gray-600">{user?.email || ""}</p>
+              </div> */}
+              {/* Logout */}
+              <div className="">
+                <button
+                  className="flex items-center gap-1 w-full px-4 py-2 rounded-md text-sm font-sm font-sans bg-blue-500 hover:bg-indigo-600 text-white transition text-nowrap"
+                  onClick={handleClick}
+                >
+                  <LogOut size={18} />
+                  Log Out
+                </button>
+              </div>{" "}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden"
+              onClick={() => setOpen(!open)}
+              aria-label="Toggle Menu"
+            >
+              {open ? <X /> : <Menu />}
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile Menu */}
+        {open && (
+          <div className="md:hidden border-t border-blue-200 py-4">
+            <ul className="flex flex-col gap-4">
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={`block text-sm ${
+                      pathname === item.href
+                        ? "text-blue-700 font-semibold"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            {/* User Info (mobile) */}
+            <div className="mt-4 flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full border border-blue-700" />
+              <div>
+                <p className="text-sm font-semibold">{user?.name || "User"}</p>
+                <p className="text-xs text-gray-600">{user?.email || ""}</p>
               </div>
             </div>
           </div>
-        </nav>
+        )}
       </Container>
-    </div>
+    </header>
   );
 };
 

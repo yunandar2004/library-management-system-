@@ -2,32 +2,77 @@
 import { useEffect, useState } from "react";
 import CartRow from "./CartRow";
 import Link from "next/link";
-import { token } from "@/services/profile";
-import useSWR from "swr";
-import { cartApiURL, fetchCart } from "@/services/cart";
+import useSWR, { useSWRConfig } from "swr";
+import { cartApiURL, fetchCart, updateCartQty, destroyCart } from "@/services/cart";
+import { toast } from "sonner";
 
 export default function CartSection() {
-  const { data, isLoading, error } = useSWR(cartApiURL, fetchCart);
+  const { data, isLoading } = useSWR(cartApiURL, fetchCart);
   const [cart, setCart] = useState([]);
+  const { mutate } = useSWRConfig();
 
-  // Set cart from fetched data
   useEffect(() => {
-    if (data?.cart?.items) {
-      setCart(data.cart.items);
-    }
+    if (data?.cart?.items) setCart(data.cart.items);
   }, [data]);
 
-  // Correct subtotal calculation using reduce
-  const subtotal = cart.reduce((sum, item) => {
-    return sum + item.price * item.qty;
-  }, 0);
+  const updateQty = async (bookId, qty) => {
+    // Optimistic update
+    mutate(
+      cartApiURL,
+      (current) => ({
+        ...current,
+        cart: {
+          ...current.cart,
+          items: current.cart.items.map((i) =>
+            i.bookId === bookId ? { ...i, qty } : i
+          ),
+        },
+      }),
+      false
+    );
 
-  const tax = Math.round(subtotal * 0.1);
-  const total = subtotal + tax;
+    try {
+      const res = await updateCartQty(bookId, qty);
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message);
+      toast.success("Quantity updated");
+      mutate(cartApiURL);
+    } catch (err) {
+      toast.error(err.message);
+      mutate(cartApiURL); // rollback
+    }
+  };
 
+  const removeItem = async (bookId) => {
+    // Optimistic update
+    mutate(
+      cartApiURL,
+      (current) => ({
+        ...current,
+        cart: {
+          ...current.cart,
+          items: current.cart.items.filter((i) => i.bookId !== bookId),
+        },
+      }),
+      false
+    );
+
+    try {
+      const res = await destroyCart(bookId);
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message);
+      toast.success("Item removed");
+      mutate(cartApiURL);
+    } catch (err) {
+      toast.error(err.message);
+      mutate(cartApiURL); // rollback
+    }
+  };
+
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (
-    <div className="mt-7 font-sans">
+    <div className="mt-7 font-sans px-3">
       <div className="grid grid-cols-7 font-semibold mb-3 text-sm">
         <span className="col-span-3">PRODUCT</span>
         <span className="text-center">Quantity</span>
@@ -35,23 +80,21 @@ export default function CartSection() {
         <span className="text-center">TOTAL</span>
       </div>
 
-      <div className="overflow-y-scroll no-scrollbar h-89">
-        {data?.cart?.items.map((item, index) => (
-          <CartRow key={index} item={item} />
+      <div className="overflow-y-auto no-scrollbar max-h-[60vh]">
+        {cart.map((item, index) => (
+          <CartRow key={index} item={item} updateQty={updateQty} removeItem={removeItem} />
         ))}
       </div>
 
-      <div className="mt-auto sticky w-full">
-        <div className="border-t mb-3 "></div>
+      <div className="mt-4 w-full">
+        <div className="border-t mb-3"></div>
         <div className="flex flex-col items-end gap-1 mb-2 text-sm">
           <div className="text-lg font-bold">Total ($): {subtotal}</div>
-          {/* <div>Tax (10%): {tax}</div> */}
-          {/* <div className="text-lg font-bold">Net Total ($): {total}</div> */}
         </div>
         <div className="flex justify-end">
           <Link
             href={"/user/cart/checkout"}
-            className="border border-black px-6 py-2 hover:bg-black hover:text-white transition"
+            className="border border-black px-6 py-2 hover:bg-black hover:text-white transition rounded"
           >
             Order Now
           </Link>

@@ -16,6 +16,7 @@ const BookDetailSection = () => {
     fetchBook
   );
 
+  console.log(data);
 
   if (isLoading) {
     return <p>Loading book details...</p>;

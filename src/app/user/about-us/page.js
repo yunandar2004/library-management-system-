@@ -1,8 +1,10 @@
+import BorrowHistoryPage from '@/features/users/pages/cart/page/BorrowHistoryPage'
 import React from 'react'
 
 const Page = () => {
   return (
-    <div>About Us Page</div>
+     <BorrowHistoryPage/>
+
   )
 }
 

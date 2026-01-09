@@ -1,9 +1,8 @@
-import React from 'react'
+import BookEditPage from "@/features/admin/book/page/BookEditPage";
+import React from "react";
 
 const Page = () => {
-  return (
-    <div>Page</div>
-  )
-}
+  return <BookEditPage />;
+};
 
-export default Page
+export default Page;

@@ -43,6 +43,8 @@ const useCreateCustomer = () => {
   return {
     store,
     register,
+    reset,
+    
     handleSubmit,
     isSubmitting,
     errors,

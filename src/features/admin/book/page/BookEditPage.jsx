@@ -1,20 +1,20 @@
 import React from "react";
 import DashboardLayout from "../../dashboard/components/DashboardLayout";
-import BookCreateForm from "../components/BookCreateForm";
+import BookEditForm from "../components/BookEditForm";
 import BreadCrumb from "@/components/Breadcrumb";
 
-const BookCreatePage = () => {
+const BookEditPage = () => {
   return (
     <DashboardLayout>
       <BreadCrumb
         homeTitle="Book Management"
         homePath="/admin/books"
-        currentPageTitle={"Create Book"}
+        currentPageTitle={"Edit Book"}
         // links={[{ title: "Manage Customer", path: "/dashboard/customer" }]}
       />
-      <BookCreateForm />
+      <BookEditForm />
     </DashboardLayout>
   );
 };
 
-export default BookCreatePage;
+export default BookEditPage;

@@ -1,19 +1,23 @@
 "use client";
 
 import { userAdd } from "@/services/user";
-import { Edit, Eye, EyeClosed } from "lucide-react";
-import { useRef, useState } from "react";
+import { Camera, Edit, Eye, EyeClosed } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useCreateCustomer from "../hooks/useCreateCustomer";
+import { token } from "@/services/profile";
 
 const UserCreateForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const fileRef = useRef(null);
+  const [preview, setPreview] = useState(null);
 
   const {
-    store,
+    // store,
+    setValue,
     register,
+    reset,
     handleSubmit,
     isSubmitting,
     errors,
@@ -21,7 +25,55 @@ const UserCreateForm = () => {
     handlePhoneCheck,
   } = useCreateCustomer();
 
+  // Handle image selection
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
+    setPreview(URL.createObjectURL(file));
+
+    // IMPORTANT: tell RHF to validate
+    setValue("image", file, { shouldValidate: true });
+  };
+
+  // Cleanup image preview
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
+  const store = async (formData) => {
+    try {
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/users`;
+
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // ✅ REQUIRED
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+          password: formData.password,
+          image: formData.imageUrl || "", // must be string
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message);
+
+      toast.success("User created successfully");
+      reset();
+      setPreview(null);
+      router.push("/admin/user");
+    } catch (err) {
+      toast.error(err.message || "Something went wrong");
+      console.error(err);
+    }
+  };
   return (
     <div className="px-10 w-full">
       <h1 className="text-xl font-bold mb-3">Create New User</h1>
@@ -29,24 +81,44 @@ const UserCreateForm = () => {
       <form onSubmit={handleSubmit(store)}>
         <div className="w-full grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-4">
           <div className="col-span-1">
-            {/* Image */}
-            <div className="relative w-20 h-20 mb-4">
-              <div className="w-20 h-20 rounded-full border flex items-center justify-center">
-                <input
-                  type="file"
-                  ref={fileRef}
-                  className="hidden"
-                  {...register("image")}
-                />
-              </div>
+            {/* IMAGE */}
+            <div className="col-span-full">
+              <div className="relative w-20 h-20 mb-4">
+                <div className="w-20 h-20 rounded-full border overflow-hidden flex items-center justify-center bg-stone-100">
+                  {preview ? (
+                    <img
+                      src={preview}
+                      {...register("image")}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Camera size={20} className="text-stone-400" />
+                  )}
+                </div>
 
-              <button
-                type="button"
-                onClick={() => fileRef.current.click()}
-                className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow"
-              >
-                <Edit className="size-5" />
-              </button>
+                <label
+                  htmlFor="image"
+                  className="absolute right-0 bottom-0 size-8 flex items-center justify-center rounded-full bg-pink-600 text-white cursor-pointer"
+                >
+                  <Camera size={16} />
+                </label>
+
+                <input
+                  id="image"
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+
+                {errors.image && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.image.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Name */}
@@ -161,7 +233,7 @@ const UserCreateForm = () => {
                 htmlFor="back-to-Customer-list"
                 className="ml-2 text-sm font-medium text-stone-900"
               >
-                Back to Book List after saving
+                Back to User List after saving
               </label>
             </div>
             <button

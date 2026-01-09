@@ -18,6 +18,7 @@ const CategorySection = () => {
       : bookApiURL,
     fetchBook
   );
+  // console.log(data);
 
   if (isLoading) {
     return <div className="p-5">Loading books...</div>;
@@ -28,7 +29,15 @@ const CategorySection = () => {
 
   // Filter by genre if selected
   const filteredBooks =
-    genre === "All Genres" ? books : books.filter((b) => b.category === genre);
+    genre === "All Genres"
+      ? books
+      : data.items.filter((b) => b.category === genre);
+
+  // const books = data?.items || [];
+
+  // const filteredBooks = genre
+  //   ? books.filter((b) => b.category === genre)
+  //   : books;
 
   return (
     <section>
@@ -64,20 +73,37 @@ const CategorySection = () => {
             </button>
           )}
         </div>
-
         {/* Genre Filter */}
-        <select
+        {/* <select
           className="px-3 py-2 border rounded-md"
           value={genre}
           onChange={(e) => setGenre(e.target.value)}
         >
-          <option>All Genres</option>
-          <option>aa</option>
-          <option>bb Genres</option>
-          <option>cc Genres</option>
-        </select>
+          <option value="">All Genres</option>
 
-        {/* View toggle (optional) */}
+          {[...new Set(data.items.map((item) => item.category))]
+            .filter(Boolean) // remove null/undefined/empty
+            .map((category, index) => (
+              <option key={index} value={category}>
+                {category}
+              </option>
+            ))}
+        </select> */}
+        <select
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          className="px-3 py-2 border rounded-md"
+        >
+          <option value="">All Genres</option>
+          {[...new Set(data.items.map((b) => b.category))]
+            .filter(Boolean)
+            .map((g, index) => (
+              <option key={index} value={g}>
+                {g}
+              </option>
+            ))}
+        </select>
+        ;{/* View toggle (optional) */}
         {/* <div className="ml-auto flex items-center gap-2">
           <p className="">View : </p>
           <button className="px-3 py-2 bg-indigo-600 text-white rounded-md flex items-center gap-3">
