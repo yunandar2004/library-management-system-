@@ -52,7 +52,13 @@ const BookCard = ({ book }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-4 flex flex-col">
+    <div
+      className={`${
+        book.availableCopies < 1
+          ? "opacity-50"
+          : "bg-white rounded-xl shadow p-4 flex flex-col"
+      }`}
+    >
       <div className="flex justify-between gap-5">
         <img
           src={book.image || "/user.png"}
@@ -60,12 +66,20 @@ const BookCard = ({ book }) => {
           className="h-40 w-full object-cover rounded"
         />
         <div className=" ">
-          <p className="bg-green-400 text-xs text-white px-4 py-1 font-sans rounded-xl">Available</p>
+          {book.availableCopies < 1 ? (
+            <p className="text-nowrap bg-red-400 text-xs text-white px-4 py-1 font-sans rounded-xl">
+              Out of stock
+            </p>
+          ) : (
+            <p className="bg-green-400 text-xs text-white px-4 py-1 font-sans rounded-xl">
+              Available
+            </p>
+          )}
         </div>
       </div>
-      <div className="">
+      <div>
         <h2 className="mt-3 font-semibold text-lg font-sans">{book.title}</h2>
-        <p className="">
+        <p>
           by <span className="font-bold font-serif">{book.author}</span>
         </p>
       </div>
@@ -87,7 +101,7 @@ const BookCard = ({ book }) => {
             ({book.rating.toFixed(1)} / {book.ratingCount} reviews)
           </span>
         </div>
-        <p className="">$ {book.borrowPrice}</p>
+        <p>$ {book.borrowPrice}</p>
       </div>
       <div className="flex gap-2 mt-4">
         <button

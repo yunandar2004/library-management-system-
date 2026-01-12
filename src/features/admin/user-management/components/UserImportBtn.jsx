@@ -1,15 +1,16 @@
-import { FileInput, Loader2 } from "lucide-react";
+"use client";
+import { FileOutput } from "lucide-react";
 import React from "react";
 
-const UserImportBtn = () => {
+const UserExportBtn = () => {
   return (
     <>
       <label
         htmlFor="sale-excel-import"
-        className={`relative hover:bg-indigo-900 flex items-center gap-3 bg-indigo-500 border border-stone-300 rounded text-white text-sm focus:ring-pink-500 focus:border-pink-500 w-full px-3 py-2 dark:bg-stone-700 dark:border-stone-600 dark:placeholder-stone-400 dark:text-white dark:focus:ring-pink-500 dark:focus:border-pink-500
+        className={`relative hover:bg-indigo-900 rounded flex items-center gap-3 bg-indigo-500 border border-stone-300 text-white text-sm focus:ring-pink-500 focus:border-pink-500 w-full px-3 py-2 dark:bg-stone-700 dark:border-stone-600 dark:placeholder-stone-400 dark:text-white dark:focus:ring-pink-500 dark:focus:border-pink-500
              `}
       >
-        <FileInput className="size-4" />
+        <FileOutput className="size-4" />
         <span className="text-nowrap">
           {/* {isLoading ? "Importing..." : "Import"} */}Import
         </span>
@@ -32,4 +33,4 @@ const UserImportBtn = () => {
   );
 };
 
-export default UserImportBtn;
+export default UserExportBtn;

@@ -12,7 +12,7 @@ const ModuleButton = ({ name, icon, url, count = null }) => {
           {icon}
         </div>
       </div>
-      <span>{name}</span>
+      <span className="flex-nowrap">{name}</span>
       {count ? <>{count}</> : <></>}
     </Link>
   );

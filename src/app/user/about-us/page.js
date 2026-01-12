@@ -1,11 +1,8 @@
-import BorrowHistoryPage from '@/features/users/pages/cart/page/BorrowHistoryPage'
-import React from 'react'
+import AboutUsPage from "@/features/users/pages/about-us/AboutUsPage";
+import React from "react";
 
 const Page = () => {
-  return (
-     <BorrowHistoryPage/>
+  return <AboutUsPage />;
+};
 
-  )
-}
-
-export default Page
+export default Page;

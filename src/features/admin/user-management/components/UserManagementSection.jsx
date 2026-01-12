@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 // import UserRow from "./UserRow";
 import UserEmptyStage from "./UserEmptyStage";
 import Sortable from "@/components/Sortable";
@@ -11,15 +11,25 @@ import useSWR from "swr";
 import { fetchUser, userApiURL } from "@/services/user";
 import Pagination from "@/components/Pagenation";
 import UserRow from "./UserRow";
+// import { convertSearchPramsToObject } from "@/utils/url";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const UserManagementSection = () => {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const router = useRouter();
 
   // SWR fetch with query, page, limit
   const { data, isLoading } = useSWR(
-    `${userApiURL}?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`,
+    `${userApiURL}?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}` +
+      (sortBy
+        ? `&sortBy=${encodeURIComponent(sortBy)}&sortOrder=${encodeURIComponent(
+            sortOrder
+          )}`
+        : ""),
     fetchUser
   );
 
@@ -32,6 +42,25 @@ const UserManagementSection = () => {
     setQuery("");
     setPage(1);
   };
+
+  const handleSort = useCallback(({ sort_by, sort_direction }) => {
+    setSortBy(sort_by);
+    setSortOrder(sort_direction);
+    setPage(1);
+  }, []);
+  // const updateUrlParams = (newParams) => {
+  //   const updatedSearch = new URLSearchParams(newParams).toString();
+  //   router.push(`?${updatedSearch}`);
+  //   setFetchUrl(`${userApiURL}?${updatedSearch}`);
+  // };
+
+  // const handleSort = (sortData) => {
+  //   const newParams = {
+  //     ...convertSearchPramsToObject(useSearchParams),
+  //     ...sortData,
+  //   };
+  //   updateUrlParams(newParams);
+  // };
 
   return (
     <section>
@@ -79,21 +108,25 @@ const UserManagementSection = () => {
           <thead className="text-xs text-stone-700 uppercase bg-indigo-100 dark:bg-indigo-700 dark:text-indigo-400">
             <tr>
               <th scope="col" className="px-2 py-5">
-                <Sortable sort_by="eb_no">
-                  <span className="text-nowrap">Invoice Number</span>
-                </Sortable>
+                Invoice Number
               </th>
               <th scope="col" className="px-2 py-5">
-                <Sortable sort_by="customer_name">User Name</Sortable>
+                <Sortable sort_by="name" handleSort={handleSort}>
+                  User Name
+                </Sortable>
               </th>
               <th scope="col" className="px-2 py-5">
                 Email
               </th>
               <th scope="col" className="px-2 py-5">
-                Phone
+                Status
               </th>
               <th scope="col" className="px-2 py-5">
-                <Sortable align="end" sort_by="createdAt">
+                <Sortable
+                  align="right"
+                  sort_by="createdAt"
+                  handleSort={handleSort}
+                >
                   <span className="text-nowrap">Created</span>
                 </Sortable>
               </th>
@@ -108,11 +141,10 @@ const UserManagementSection = () => {
                 </td>
               </tr>
             ) : (
-              data?.items?.map(
-                (user, index) =>
-                  // user.role === "user" && <UserRow user={user} key={index} />
-                   <UserRow user={user} key={index} />
-              )
+              data?.items?.map((user, index) => (
+                // user.role === "user" && <UserRow user={user} key={index} />
+                <UserRow user={user} key={index} />
+              ))
             )}
           </tbody>
         </table>

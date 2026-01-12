@@ -3,6 +3,8 @@
 import { Calendar1Icon, Undo2Icon } from "lucide-react";
 
 function BookCard({ book, view, tab, onReturn, onPayFine }) {
+  const date = new Date();
+  console.log(book);
   return (
     <div
       className={`rounded-lg shadow p-4 bg-white 
@@ -75,6 +77,29 @@ function BookCard({ book, view, tab, onReturn, onPayFine }) {
 
       {/* Return Button */}
       <div className="col-span-1 mt-3 sm:mt-0">
+        {/* {book.borrowed === date.toLocaleDateString("en-US") ? (
+          <button
+            // onClick={onReturn}
+            className={`w-full sm:w-auto px-4 py-2 rounded text-sm text-white flex gap-2 items-center justify-center
+            bg-indigo-600`}
+          >
+            Delivering
+          </button>
+        ) : (
+          <button
+            onClick={onReturn}
+            className={`w-full sm:w-auto px-4 py-2 rounded text-sm text-white flex gap-2 items-center justify-center
+            ${tab === "returned" ? "hidden" : ""} 
+            ${view === "grid" ? "hidden" : ""} 
+            ${book.status === "late" ? "bg-red-500" : "bg-indigo-600"}`}
+          >
+            <div className="border rounded flex items-center justify-center px-2 py-1">
+              <Undo2Icon className="w-4 h-4" />
+            </div>
+            Return
+          </button>
+        )} */}
+
         <button
           onClick={onReturn}
           className={`w-full sm:w-auto px-4 py-2 rounded text-sm text-white flex gap-2 items-center justify-center

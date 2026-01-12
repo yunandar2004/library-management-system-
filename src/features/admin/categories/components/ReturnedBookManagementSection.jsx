@@ -15,13 +15,11 @@ import ReturnedBookRow from "./ReturnedBookRow";
 import ReturnedBookEmptyStage from "./ReturnedBookEmptyStage";
 
 const ReturnedBookManagementSection = () => {
-  const booksData = [
-
-  ];
+  const booksData = [];
 
   return (
-    <section className="">
-        <BookStaticsTab />
+    <section>
+      <BookStaticsTab />
 
       <div className="flex justify-between my-3 px-2">
         {/* <p className="font-bold text-2xl">Book Management</p> */}
@@ -80,7 +78,7 @@ const ReturnedBookManagementSection = () => {
                     <span className=" text-nowrap">Copy Numbers</span>
                   </Sortable>
                 </th>
-                              <th scope="col" className="px-2 py-5">
+                <th scope="col" className="px-2 py-5">
                   <Sortable align={"end"} sort_by={`usd`}>
                     <span className=" text-nowrap">Total Books </span>
                   </Sortable>
@@ -97,10 +95,10 @@ const ReturnedBookManagementSection = () => {
                 <th scope="col" className="px-2 py-5 text-end">
                   <Sortable sort_by={`created_at`}>Borrowed</Sortable>
                 </th>
-                    <th scope="col" className="px-2 py-5 text-end">
+                <th scope="col" className="px-2 py-5 text-end">
                   <Sortable sort_by={`created_at`}>Due Date</Sortable>
                 </th>
-                                    <th scope="col" className="px-2 py-5 text-end">
+                <th scope="col" className="px-2 py-5 text-end">
                   <Sortable sort_by={`created_at`}>Return Date</Sortable>
                 </th>
                 <th scope="col" className="px-2 py-5 text-end"></th>

@@ -105,7 +105,7 @@ const CategorySection = () => {
         </select>
         ;{/* View toggle (optional) */}
         {/* <div className="ml-auto flex items-center gap-2">
-          <p className="">View : </p>
+          <p  >View : </p>
           <button className="px-3 py-2 bg-indigo-600 text-white rounded-md flex items-center gap-3">
             <Grid size={20} />
             <span>Grid</span>

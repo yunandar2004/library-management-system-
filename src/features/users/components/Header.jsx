@@ -69,13 +69,14 @@ const Header = ({ className = "" }) => {
 
             {/* User Info (desktop) */}
             <div className="hidden md:flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full border border-blue-700" />
+              {/* <div className="h-8 w-8 rounded-full border border-blue-700" /> */}
+              <img src="/user.png" alt="user" className="h-8 w-8 rounded-full border border-blue-700" />
               {/* <div className="leading-tight">
                 <p className="text-sm font-semibold">{user?.name || "User"}</p>
                 <p className="text-xs text-gray-600">{user?.email || ""}</p>
               </div> */}
               {/* Logout */}
-              <div className="">
+              <div>
                 <button
                   className="flex items-center gap-1 w-full px-4 py-2 rounded-md text-sm font-sm font-sans bg-blue-500 hover:bg-indigo-600 text-white transition text-nowrap"
                   onClick={handleClick}

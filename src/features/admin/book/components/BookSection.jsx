@@ -30,7 +30,7 @@ const BookSection = () => {
 
   return (
     <section>
-      <div className="">
+      <div >
         <p className="font-bold text-2xl px-3 pt-5">Book Management</p>
 
         {/* Search + Buttons */}
@@ -90,7 +90,7 @@ const BookSection = () => {
         </div>
       </div>
 
-      <div className="">
+      <div >
         {/* Pagination (only for non-search list) */}
         {!query && (
           <Pagination

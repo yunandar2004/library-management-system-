@@ -25,7 +25,6 @@ function DashboardLayout({ children }) {
     if (!token) {
       router.push("/login");
     }
-
   }, [token]);
   return (
     <section className=" grid grid-cols-7 bg-gray-200">
@@ -34,7 +33,7 @@ function DashboardLayout({ children }) {
         <div className=" bg-white w-full">
           <AdminHeader />
         </div>
-        <div className="">{children}</div>
+        <div>{children}</div>
       </div>
     </section>
   );

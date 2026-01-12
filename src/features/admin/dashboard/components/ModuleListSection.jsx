@@ -5,13 +5,15 @@ import { Book, Coins, IdCard, Monitor, Recycle, Users } from "lucide-react";
 const ModuleListSection = () => {
   const modules = [
     {
-      title: "Overdue Borrowers",
+      // title: "Overdue Borrowers",
+      title: "Manage Admin",
       lists: [
         {
-          name: "Overdue Borrowers ",
-          icon: <Coins className=" size-7" />,
+          name: "Total Admin Base ",
+          // icon: <Coins className=" size-7" />,
+          icon: <Users className=" size-7" />,
 
-          url: "/dashboard/sale",
+          url: "/admin/admin-management",
         },
       ],
     },
@@ -24,9 +26,16 @@ const ModuleListSection = () => {
           url: "/admin/user",
         },
         {
+          name: "Manage Borrower ",
+          // icon: <MessagesSquare className=" size-7" />,
+          icon: <Monitor className=" size-7" />,
+
+          url: "/admin/user/borrowers",
+        },
+        {
           name: "Total Overdue Borrowers",
           icon: <IdCard className=" size-7" />,
-          url: "/dashboard/passport-expiry",
+          url: "/admin/borrows/overdue-report",
         },
       ],
     },
@@ -38,17 +47,17 @@ const ModuleListSection = () => {
           icon: <Book className=" size-7" />,
           url: "/admin/books",
         },
-        {
-          name: "Manage Borrowed Books",
-          // icon: <MessagesSquare className=" size-7" />,
-          icon: <Monitor className=" size-7" />,
+        // {
+        //   name: "Manage Borrower ",
+        //   // icon: <MessagesSquare className=" size-7" />,
+        //   icon: <Monitor className=" size-7" />,
 
-          url: "/admin/borrows",
-        },
+        //   url: "/admin/user/borrowers",
+        // },
         {
-          name: "Manage Returned Books",
+          name: "Manage Borrowed/Returned Books",
           icon: <Recycle className=" size-7" />,
-          url: "/admin/returned-books",
+          url: "/admin/borrows/borrowedBook",
         },
       ],
     },

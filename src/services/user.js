@@ -1,6 +1,5 @@
 export const userApiURL = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 
-import useAccountStore from "@/store/useAccountStore";
 import { token } from "./profile";
 export const fetchUser = (...args) =>
   fetch(...args, {
@@ -31,6 +30,21 @@ export const storeUser = (data) => {
     body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+
+export const excelImport = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return fetch(`${userApiURL}/import`, {
+    method: "POST",
+    body: formData,
+    headers: {
+      Accept: "application/json",
       Authorization: `Bearer ${token}`,
     },
   });

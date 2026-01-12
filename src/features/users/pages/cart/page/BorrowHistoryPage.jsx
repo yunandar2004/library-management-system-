@@ -9,7 +9,7 @@ import BorrowHistory from "../components/BorrowHistory";
 const BorrowHistoryPage = () => {
   return (
     <div>
-      <Header />
+      <Header  />
       <Container>
         {/* <BreadCrumb
           homeTitle="Home"
@@ -20,7 +20,7 @@ const BorrowHistoryPage = () => {
         <BorrowHistory />
       </Container>
 
-      <HomeFooter />
+      <HomeFooter className={`fixed bottom-0 w-full mt-20 `} />
     </div>
   );
 };
